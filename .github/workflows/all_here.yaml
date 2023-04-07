@@ -1,0 +1,48 @@
+name: Compile, Test, Release and Deploy
+
+on:
+  push:
+    branches: [trunk]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    name: Compile Code
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+      - name: Compile Code
+        run: |
+          echo "Compiled"
+      - name: Test Code
+        run: |
+          echo "Test"
+      - name: Build Code
+        run: |
+          # sbt 'runMain chessfinder.SamTemplate' assembly
+          # 
+          echo "Build"
+      - name: Deploying Code
+        run: |
+          # sbt 'runMain chessfinder.SamTemplate' assembly
+          # 
+          echo "Deploy to Beta"
+          
+  test:
+    name: Test Code
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+      - name: Download Compiled Code
+        uses: actions/download-artifact@v2
+        with:
+          name: compiled-code
+          path: ./Main.class
+      - name: Test Code
+        run: |
+          # Test your code here
+          java Main
