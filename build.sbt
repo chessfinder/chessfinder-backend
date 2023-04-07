@@ -12,6 +12,8 @@ ThisBuild / testFrameworks ++= List(
 )
 // ThisBuild / licenses += "AGPL-3.0" -> url("https://opensource.org/licenses/AGPL-3.0")
 enablePlugins(GraalVMNativeImagePlugin)
+enablePlugins(GitPlugin)
+
 
 val lilaMaven = "lila-maven" at "https://raw.githubusercontent.com/lichess-org/lila-maven/master"
 val sonashots = "sonashots" at "https://oss.sonatype.org/content/repositories/snapshots"
