@@ -18,7 +18,7 @@ ThisBuild / testFrameworks ++= List(
 )
 // ThisBuild / licenses += "AGPL-3.0" -> url("https://opensource.org/licenses/AGPL-3.0")
 
-// ThisBuild / versionScheme := Some("semver-spec")
+ThisBuild / versionScheme := Some("semver-spec")
 
 val lilaMaven = "lila-maven" at "https://raw.githubusercontent.com/lichess-org/lila-maven/master"
 val sonashots = "sonashots" at "https://oss.sonatype.org/content/repositories/snapshots"
@@ -36,6 +36,7 @@ lazy val DeepIntegrationSettings: Seq[Def.Setting[_]] =
 lazy val root = (project in file("."))
   .configs(DeepIntegrationTest)
   .settings(DeepIntegrationSettings)
+  // .settings(version := "v11.3.3")
   .settings(git.useGitDescribe := true)
   .settings(
     name := "chess-finder",
