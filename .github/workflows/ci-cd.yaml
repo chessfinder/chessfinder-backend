@@ -26,7 +26,7 @@ jobs:
         run: |
           # sbt 'runMain chessfinder.SamTemplate' assembly
           # 
-          echo "Deploy to Beta"
+          echo "Deploy to Beta "
   
   release:
       name: Tag, Release and Deploy to Prod
