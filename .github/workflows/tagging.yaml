@@ -1,9 +1,13 @@
 name: Tagging
 
+# on:
+#   push:
+#     branches: [trunk]
+#     path: [version]
+
 on:
-  push:
+  pull_request:
     branches: [trunk]
-    path: [version]
 
 
 jobs:
@@ -17,6 +21,9 @@ jobs:
       - name: Read version file
         id: read_version
         run: echo "{version}=$(cat version)" >> $GITHUB_OUTPUT
+
+      - name: Dump steps context
+        run: echo '${{ toJSON(steps) }}'
 
       - name: Create tag
         id: create_tag
