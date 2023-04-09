@@ -20,7 +20,7 @@ jobs:
         
       - name: Read version file
         id: read_version
-        run: echo "{version}=$(cat version)" >> $GITHUB_OUTPUT
+        run: echo "app_ersion=$(cat version)" >> $GITHUB_ENV
 
       - name: Dump steps context
         run: echo '${{ toJSON(steps) }}'
@@ -30,7 +30,7 @@ jobs:
         uses: anothrNick/github-tag-action@1.61.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          CUSTOM_TAG: ${{ steps.read_version.outputs.version }}
+          CUSTOM_TAG: ${{ env.app_version }}
     
   # build:
   #   name: Compile, Test and Deploy to Beta
