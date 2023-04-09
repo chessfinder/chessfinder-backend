@@ -1,25 +1,32 @@
-name: PR_Closed
+name: PR Merged
 
 on:
-  push:
-    branches: [trunk] 
+  pull_request:
+    branches: [trunk]
+    types: [closed]
 
 jobs:
-  if_merged:
-    # if: github.event.pull_request.merged == true
+  build:
+  if: github.event.pull_request.merged == true
+    name: Compile, Build and Deploy to Beta
     runs-on: ubuntu-latest
     steps:
-    - run: |
-        echo The PR was merged
-    - name: Dump GitHub context
-      id: github_context_step
-      run: echo '${{ toJSON(github) }}'
-    - name: Dump job context
-      run: echo '${{ toJSON(job) }}'
-    - name: Dump steps context
-      run: echo '${{ toJSON(steps) }}'
-    - name: Dump event context
-      run: echo '${{ toJSON(github.event) }}'
+      - name: Checkout Code
+        uses: actions/checkout@v2
+      - name: Compile Code
+        run: |
+          echo "Compiled"
+          cat version
+      - name: Build Code
+        run: |
+          # sbt 'runMain chessfinder.SamTemplate' assembly
+          # 
+          echo "Build"
+      - name: Deploying to Beta
+        run: |
+          # sbt 'runMain chessfinder.SamTemplate' assembly
+          # 
+          echo "Deploy to Beta "
     
   # build:
   #   name: Compile, Test and Deploy to Beta

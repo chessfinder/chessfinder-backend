@@ -1,27 +1,52 @@
-name: PR Open
+name: Tagging
 
 on:
-  pull_request:
+  push:
     branches: [trunk]
-
+    path: [version]
 
 
 jobs:
-  test:
-    name: Test
+  tagging:
+    # if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Code
+      - name: Checkout code
         uses: actions/checkout@v2
-      - name: Check Fomatting
-        run: |
-          echo "CompFomattingiled"
-      - name: Compile Code
-        run: |
-          echo "Compiled"
-      - name: Test Code
-        run: |
-          echo "Test"
+        
+      - name: Read version file
+        id: read_version
+        run: echo "{version}=$(cat version)" >> $GITHUB_OUTPUT
+        
+      - name: Create tag
+        id: create_tag
+        uses: anothrNick/github-tag-action@v1.14.2
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          tag: ${{ steps.read_version.outputs.version }}
+    
+  # build:
+  #   name: Compile, Test and Deploy to Beta
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Checkout Code
+  #       uses: actions/checkout@v2
+  #     - name: Compile Code
+  #       run: |
+  #         echo "Compiled"
+  #     - name: Test Code
+  #       run: |
+  #         echo "Test"
+  #     - name: Build Code
+  #       run: |
+  #         # sbt 'runMain chessfinder.SamTemplate' assembly
+  #         # 
+  #         echo "Build"
+  #     - name: Deploying to Beta
+  #       run: |
+  #         # sbt 'runMain chessfinder.SamTemplate' assembly
+  #         # 
+  #         echo "Deploy to Beta "
   
   # release:
   #     name: Tag, Release and Deploy to Prod
