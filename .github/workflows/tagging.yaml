@@ -17,11 +17,11 @@ jobs:
       - name: Read version file
         id: read_version
         run: echo "{version}=$(cat version)" >> $GITHUB_OUTPUT
-        
+
       - name: Create tag
         id: create_tag
         uses: anothrNick/github-tag-action@1.61.0
-        with:
+        env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           CUSTOM_TAG: ${{ steps.read_version.outputs.version }}
     
