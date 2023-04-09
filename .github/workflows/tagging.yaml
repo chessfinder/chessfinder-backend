@@ -35,7 +35,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           CUSTOM_TAG: ${{ env.app_version }}
           DEFAULT_BUMP: none
-          RELEASE_BRANCHES: trunk
+          RELEASE_BRANCHES: master
     
   # build:
   #   name: Compile, Test and Deploy to Beta
