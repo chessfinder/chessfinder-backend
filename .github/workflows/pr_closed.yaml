@@ -1,8 +1,7 @@
-name: CI/CD
+name: PR_Closed
 
 on:
-  pull_request:
-    types: [closed]
+  push:
     branches: [trunk] 
 
 jobs:
