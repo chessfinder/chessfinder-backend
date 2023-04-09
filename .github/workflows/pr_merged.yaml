@@ -7,7 +7,7 @@ on:
 
 jobs:
   build:
-  if: github.event.pull_request.merged == true
+    if: github.event.pull_request.merged == true
     name: Compile, Build and Deploy to Beta
     runs-on: ubuntu-latest
     steps:
