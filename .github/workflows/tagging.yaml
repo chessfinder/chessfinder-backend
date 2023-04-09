@@ -28,14 +28,21 @@ jobs:
       - name: Dump Env
         run: echo '${{ env.app_version }}'
 
-      - name: Create tag
-        id: create_tag
-        uses: anothrNick/github-tag-action@1.61.0
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          CUSTOM_TAG: ${{ env.app_version }}
-          DEFAULT_BUMP: none
-          RELEASE_BRANCHES: master
+      # - name: Create tag
+      #   id: create_tag
+      #   uses: anothrNick/github-tag-action@1.61.0
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #     CUSTOM_TAG: ${{ env.app_version }}
+      #     DEFAULT_BUMP: none
+      #     RELEASE_BRANCHES: master
+
+      - uses: rickstaa/action-create-tag@v1.6.1
+        id: "tag_create"
+        with:
+          tag: ${{ env.app_version }}
+          tag_exists_error: false
+          message: "Latest release"
     
   # build:
   #   name: Compile, Test and Deploy to Beta
