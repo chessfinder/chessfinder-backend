@@ -18,7 +18,7 @@ jobs:
           echo "Tag name from github.ref_name: ${{  github.ref_name }}"
       - name: Set env
         run: |
-          echo "release_version=${{  github.ref_name }}" >> $GITHUB_ENV
+          echo "release_version=$GITHUB_REF_NAME" >> $GITHUB_ENV
       - name: Test
         run: |
           echo ${{ toJSON(env) }}
