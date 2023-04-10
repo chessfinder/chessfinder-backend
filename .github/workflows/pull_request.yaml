@@ -37,7 +37,7 @@ jobs:
         shell: bash
         run: |
           sbt -v "assembly; runMain chessfinder.SamTemplate;"
-          cat tamplate.yaml
+          cat template.yaml
       - uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
