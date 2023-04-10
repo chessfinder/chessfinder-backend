@@ -17,7 +17,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-        
+      - name: Branch name
+        run: echo running on branch ${GITHUB_REF##*/}
       - name: Read version file
         id: read_version
         run: echo "app_version=$(cat version)" >> $GITHUB_ENV
