@@ -2,8 +2,8 @@ name: Deploy Prod
 
 on:
   push:
-    tag: 
-      - 'v/**'
+    tags: 
+      - '**'
 
 jobs:
   releasing:
