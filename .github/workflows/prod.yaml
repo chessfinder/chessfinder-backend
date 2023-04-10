@@ -21,7 +21,7 @@ jobs:
           echo "release_version=$GITHUB_REF_NAME" >> $GITHUB_ENV
       - name: Test
         run: |
-          echo ${{ toJSON(env) }}
+          echo "${{ toJSON(env) }}"
  
       - name: GitHub Tag Name example
         run: |
