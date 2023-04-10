@@ -2,7 +2,7 @@ name: Deploy Prod
 
 on:
   push:
-    tags: 
+    tag: 
       - '**'
 
 jobs:
@@ -18,17 +18,7 @@ jobs:
           echo "Tag name from github.ref_name: ${{  github.ref_name }}"
       - name: Set env
         run: |
-          echo "1"
-          echo "${GITHUB_REF}"
-          echo "2"
-          echo "${GITHUB_REF#refs/*/}"
-          echo "3"
-          release_version=$(${GITHUB_REF#refs/*/})
-          echo "3.5"
-          echo "${release_version}"
-          echo "release_version=${GITHUB_REF#refs/*/}"
-          echo "4"
-          echo "release_version=ZZZ" >> $GITHUB_ENV
+          echo "release_version=${{  github.ref_name }}" >> $GITHUB_ENV
       - name: Test
         run: |
           echo ${{ toJSON(env) }}
