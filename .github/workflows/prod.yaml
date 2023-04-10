@@ -1,35 +1,42 @@
-name: PR Merged
+name: Deploy Prod
 
 on:
-  pull_request:
-    branches: [trunk]
-    types: [closed]
+  push:
+    tag: 
+      - '*'
 
 jobs:
-  build:
-    if: github.event.pull_request.merged == true
-    name: Compile, Build and Deploy to Beta
+  releasing:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Code
+      - name: Checkout code
         uses: actions/checkout@v2
-      - name: Branch name
-        run: echo running on branch ${GITHUB_REF##*/}
-      - name: Compile Code
+
+      - name: Set env
         run: |
-          echo "Compiled"
-          cat version
-      - name: Build Code
+          echo "${GITHUB_REF}"
+          echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+      - name: Test
+        run: |
+          echo $RELEASE_VERSION
+          echo ${{ env.RELEASE_VERSION }}
+      - name: Create release
+        uses: actions/create-release@v1
+        with:
+          tag_name: ${{ env.RELEASE_VERSION }}
+          release_name: Release ${{ env.RELEASE_VERSION }}
+          body: |
+            This release contains changes for version ${{ env.RELEASE_VERSION }}.
+          draft: false
+          prerelease: false
+          token: ${{ secrets.GITHUB_TOKEN }}
+     
+      - name: Deploying to Prod
         run: |
           # sbt 'runMain chessfinder.SamTemplate' assembly
           # 
-          echo "Build"
-      - name: Deploying to Beta
-        run: |
-          # sbt 'runMain chessfinder.SamTemplate' assembly
-          # 
-          echo "Deploy to Beta "
-    
+          echo "Deploy to Prod"
+      
   # build:
   #   name: Compile, Test and Deploy to Beta
   #   runs-on: ubuntu-latest
@@ -72,19 +79,4 @@ jobs:
   #         github_token: ${{ secrets.GITHUB_TOKEN }}
   #         tag: ${{ steps.read_version.outputs.version }}
           
-  #     - name: Create release
-  #       uses: actions/create-release@v1
-  #       with:
-  #         tag_name: ${{ steps.create_tag.outputs.tag }}
-  #         release_name: Release ${{ steps.create_tag.outputs.tag }}
-  #         body: |
-  #           This release contains changes for version ${{ steps.read_version.outputs.version }}.
-  #         draft: false
-  #         prerelease: false
-  #         token: ${{ secrets.GITHUB_TOKEN }}
-     
-  #     - name: Deploying to Prod
-  #       run: |
-  #         # sbt 'runMain chessfinder.SamTemplate' assembly
-  #         # 
-  #         echo "Deploy to Prod"
+  

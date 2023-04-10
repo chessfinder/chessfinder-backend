@@ -1,25 +1,29 @@
-name: Tagging
+name: Deploy QA
 
 on:
   push:
     branches: [trunk]
-    path: [version]
 
 jobs:
-  tagging:
+  build:
+    name: Compile, Build and Deploy QA
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
+      - name: Checkout Code
         uses: actions/checkout@v2
-      - name: Read version file
-        id: read_version
-        run: echo "app_version=$(cat version)" >> $GITHUB_ENV
-      - uses: rickstaa/action-create-tag@v1.6.1
-        id: "tag_create"
-        with:
-          tag: ${{ env.app_version }}
-          tag_exists_error: false
-          message: "Latest release"
+      - name: Compile Code
+        run: |
+          echo "Compiled"
+      - name: Build Code
+        run: |
+          # sbt 'runMain chessfinder.SamTemplate' assembly
+          # 
+          echo "Build"
+      - name: Deploying QA
+        run: |
+          # sbt 'runMain chessfinder.SamTemplate' assembly
+          # 
+          echo "Deploy to Beta "
     
   # build:
   #   name: Compile, Test and Deploy to Beta

@@ -1,10 +1,8 @@
-name: PR Open
+name: Pull Request
 
 on:
   pull_request:
     branches: [trunk]
-
-
 
 jobs:
   test:
@@ -13,11 +11,9 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v2
-      - name: Branch name
-        run: echo running on branch ${GITHUB_REF##*/}
       - name: Check Fomatting
         run: |
-          echo "CompFomattingiled"
+          echo "Fomatting"
       - name: Compile Code
         run: |
           echo "Compiled"
