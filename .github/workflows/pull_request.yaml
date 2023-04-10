@@ -36,7 +36,7 @@ jobs:
       - name: Packaging Code
         shell: bash
         run: |
-          sbt -v "assembly; runMain SamTamplate;"
+          sbt -v "assembly; runMain chessfinder.SamTamplate;"
           cat tamplate.yaml
       - uses: aws-actions/configure-aws-credentials@v1
         with:
