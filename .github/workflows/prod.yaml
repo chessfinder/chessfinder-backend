@@ -28,7 +28,9 @@ jobs:
           echo "Tag name from GITHUB_REF_NAME: $GITHUB_REF_NAME"
           echo "Tag name from github.ref_name: ${{  github.ref_name }}"
       - name: Create release
-        uses: actions/create-release@v1
+        uses: actions/create-release@v1.1.4
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: ${{ env.release_version }}
           release_name: Release ${{ env.release_version }}
@@ -36,7 +38,7 @@ jobs:
             This release contains changes for version ${{ env.release_version }}.
           draft: false
           prerelease: false
-          token: ${{ secrets.GITHUB_TOKEN }}
+          # token: ${{ secrets.GITHUB_TOKEN }}
      
       - name: Deploying to Prod
         run: |
