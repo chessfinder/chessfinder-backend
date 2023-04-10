@@ -22,11 +22,7 @@ jobs:
       - name: Test
         run: |
           echo ${{ toJSON(env) }}
-      - name: Test2
-        run: |
-          # echo "$release_version"
-          echo ${{ env.release_version }}
-
+ 
       - name: GitHub Tag Name example
         run: |
           echo "Tag name from GITHUB_REF_NAME: $GITHUB_REF_NAME"
