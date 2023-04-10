@@ -20,9 +20,9 @@ jobs:
       - name: Test
         run: |
           echo ${{ toJSON(env) }}
-      - name: Test
+      - name: Test2
         run: |
-          echo $RELEASE_VERSION
+          echo "$RELEASE_VERSION"
           echo ${{ env.RELEASE_VERSION }}
 
       - name: GitHub Tag Name example
