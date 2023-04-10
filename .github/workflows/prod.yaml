@@ -21,7 +21,7 @@ jobs:
           echo "3"
           echo "release_version=${GITHUB_REF#refs/*/}"
           echo "4"
-          echo "release_version=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+          echo "release_version=ZZZ" >> $GITHUB_ENV
       - name: Test
         run: |
           echo ${{ toJSON(env) }}
