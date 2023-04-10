@@ -19,6 +19,9 @@ jobs:
           echo "2"
           echo "${GITHUB_REF#refs/*/}"
           echo "3"
+          release_version=$(${GITHUB_REF#refs/*/})
+          echo "3.5"
+          echo "${release_version}"
           echo "release_version=${GITHUB_REF#refs/*/}"
           echo "4"
           echo "release_version=ZZZ" >> $GITHUB_ENV
