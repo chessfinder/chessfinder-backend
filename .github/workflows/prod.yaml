@@ -3,7 +3,7 @@ name: Deploy Prod
 on:
   push:
     tag: 
-      - '*'
+      - '**'
 
 jobs:
   releasing:
