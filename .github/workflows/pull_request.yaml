@@ -11,48 +11,22 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v2
+      - name: Setup JDK
+        uses: actions/setup-java@v3.11.0
+        with:
+          distribution: 'corretto'
+          java-version: '11'
       - name: Check Fomatting
+        shell: bash
         run: |
-          echo "Fomatting"
+          # sbt -v "scalafmtCheckAll;"
+          sbt -v "compile;"
       - name: Compile Code
+        shell: bash
         run: |
-          echo "Compiled"
+          sbt -v "compile;"
       - name: Test Code
+        shell: bash
         run: |
-          echo "Test"
-  
-  # release:
-  #     name: Tag, Release and Deploy to Prod
-  #     runs-on: ubuntu-latest
-  #     if: "github.event_name == 'push' && contains(github.event.head_commit.modified, 'version')"
-  #     steps:
-  #     - name: Checkout code
-  #       uses: actions/checkout@v2
-        
-  #     - name: Read version file
-  #       id: read_version
-  #       run: echo ::set-output name=version::$(cat version)
-        
-  #     - name: Create tag
-  #       id: create_tag
-  #       uses: anothrNick/github-tag-action@v1.14.2
-  #       with:
-  #         github_token: ${{ secrets.GITHUB_TOKEN }}
-  #         tag: ${{ steps.read_version.outputs.version }}
-          
-  #     - name: Create release
-  #       uses: actions/create-release@v1
-  #       with:
-  #         tag_name: ${{ steps.create_tag.outputs.tag }}
-  #         release_name: Release ${{ steps.create_tag.outputs.tag }}
-  #         body: |
-  #           This release contains changes for version ${{ steps.read_version.outputs.version }}.
-  #         draft: false
-  #         prerelease: false
-  #         token: ${{ secrets.GITHUB_TOKEN }}
-     
-  #     - name: Deploying to Prod
-  #       run: |
-  #         # sbt 'runMain chessfinder.SamTemplate' assembly
-  #         # 
-  #         echo "Deploy to Prod"
+          # sbt -v "test;"
+          sbt -v "compile;"
