@@ -19,6 +19,7 @@ jobs:
         uses: actions/checkout@v2
       - name: Branch name
         run: echo '${{ toJSON(github.event) }}'
+        # ba xi senc
       - name: Read version file
         id: read_version
         run: echo "app_version=$(cat version)" >> $GITHUB_ENV
