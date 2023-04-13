@@ -2,7 +2,7 @@ name: Tagging
 
 on:
   push:
-    branches: [trunk]
+    branches: [main,master,trunk]
     path: [version]
 
 jobs:
