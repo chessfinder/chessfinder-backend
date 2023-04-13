@@ -5,81 +5,18 @@ on:
     branches: [trunk]
     path: [version]
 
-
 jobs:
   tagging:
-    # if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-        
       - name: Read version file
         id: read_version
-        run: echo "{version}=$(cat version)" >> $GITHUB_OUTPUT
-
-      - name: Create tag
-        id: create_tag
-        uses: anothrNick/github-tag-action@1.61.0
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          CUSTOM_TAG: ${{ steps.read_version.outputs.version }}
-    
-  # build:
-  #   name: Compile, Test and Deploy to Beta
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Checkout Code
-  #       uses: actions/checkout@v2
-  #     - name: Compile Code
-  #       run: |
-  #         echo "Compiled"
-  #     - name: Test Code
-  #       run: |
-  #         echo "Test"
-  #     - name: Build Code
-  #       run: |
-  #         # sbt 'runMain chessfinder.SamTemplate' assembly
-  #         # 
-  #         echo "Build"
-  #     - name: Deploying to Beta
-  #       run: |
-  #         # sbt 'runMain chessfinder.SamTemplate' assembly
-  #         # 
-  #         echo "Deploy to Beta "
-  
-  # release:
-  #     name: Tag, Release and Deploy to Prod
-  #     runs-on: ubuntu-latest
-  #     if: "github.event_name == 'push' && contains(github.event.head_commit.modified, 'version')"
-  #     steps:
-  #     - name: Checkout code
-  #       uses: actions/checkout@v2
-        
-  #     - name: Read version file
-  #       id: read_version
-  #       run: echo ::set-output name=version::$(cat version)
-        
-  #     - name: Create tag
-  #       id: create_tag
-  #       uses: anothrNick/github-tag-action@v1.14.2
-  #       with:
-  #         github_token: ${{ secrets.GITHUB_TOKEN }}
-  #         tag: ${{ steps.read_version.outputs.version }}
-          
-  #     - name: Create release
-  #       uses: actions/create-release@v1
-  #       with:
-  #         tag_name: ${{ steps.create_tag.outputs.tag }}
-  #         release_name: Release ${{ steps.create_tag.outputs.tag }}
-  #         body: |
-  #           This release contains changes for version ${{ steps.read_version.outputs.version }}.
-  #         draft: false
-  #         prerelease: false
-  #         token: ${{ secrets.GITHUB_TOKEN }}
-     
-  #     - name: Deploying to Prod
-  #       run: |
-  #         # sbt 'runMain chessfinder.SamTemplate' assembly
-  #         # 
-  #         echo "Deploy to Prod"
+        run: echo "app_version=$(cat version)" >> $GITHUB_ENV
+      - uses: rickstaa/action-create-tag@v1.6.1
+        id: "tag_create"
+        with:
+          tag: ${{ env.app_version }}
+          tag_exists_error: false
+          message: "Tagged: ${{ env.app_version }}"
