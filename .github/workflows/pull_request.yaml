@@ -2,7 +2,7 @@ name: Pull Request
 
 on:
   pull_request:
-    branches: [main,master,trunk]
+    branches: [master]
 
 jobs:
   test:
@@ -30,22 +30,5 @@ jobs:
       #   run: |
       #     # sbt -v "test;"
       #     sbt -v "compile;"
-      - uses: aws-actions/setup-sam@v2
-        with:
-          use-installer: true
-      - name: Packaging Code
-        shell: bash
-        run: |
-          sbt -v "assembly; runMain chessfinder.SamTemplate;"
-          cat template.yaml
-      - uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.AWS_REGION }}
-      
-      
-      - name: Deploying Application
-        run: |
-          sam deploy --template-file template.yaml --stack-name chessfinder --capabilities CAPABILITY_IAM --s3-bucket ${{ secrets.AWS_APPLICATION_BUCKET }}
+
 
