@@ -16,11 +16,10 @@ jobs:
         with:
           distribution: 'corretto'
           java-version: '11'
-      # - name: Check Fomatting
-      #   shell: bash
-      #   run: |
-      #     # sbt -v "scalafmtCheckAll;"
-      #     sbt -v "compile;"
+      - name: Check Fomatting
+        shell: bash
+        run: |
+          sbt -v "scalafmtCheckAll;"
       - name: Compile Code
         shell: bash
         run: |

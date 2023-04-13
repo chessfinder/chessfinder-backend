@@ -13,7 +13,6 @@ import search.entity.*
 import zio.*
 import core.SearchFen
 
-
 class ControllerBlueprint(val version: String) extends ZTapir:
 
   private val baseUrl = endpoint.in("api" / version)
@@ -23,14 +22,12 @@ class ControllerBlueprint(val version: String) extends ZTapir:
       .in(jsonBody[FindRequest])
       .out(jsonBody[FindResponse])
       .errorOut(jsonBody[ApiError])
-  
-  val `GET /api/version` = 
+
+  val `GET /api/version` =
     baseUrl
       .out(stringBody)
 
-
   lazy val endpoints: List[Endpoint[?, ?, ?, ?, ?]] = List(`GET /api/version/game`, `GET /api/version`)
-
 
 class DependentController(blueprint: ControllerBlueprint) extends ZTapir:
 
