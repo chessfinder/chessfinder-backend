@@ -49,6 +49,6 @@ class DependentController(blueprint: ControllerBlueprint) extends ZTapir:
     blueprint.`GET /api/version/game`.zServerLogic(logic)
 
   val `GET /api/version`: ZServerEndpoint[GameFinder, Any] =
-    blueprint.`GET /api/version`.zServerLogic(_ => ZIO.succeed(blueprint.version))
+    blueprint.`GET /api/version`.zServerLogic(_ => ZIO.succeed(buildinfo.BuildInfo.toString))
 
   def rest = List(`GET /api/version/game`, `GET /api/version`)

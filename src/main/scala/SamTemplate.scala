@@ -22,7 +22,7 @@ object SamTemplate extends App {
       "chessfinder.LambdaMain::handleRequest"
     ),
     memorySize = 1024,
-    timeout = 180.seconds
+    timeout = 29.seconds
   )
   val yaml = AwsSamInterpreter(samOptions).toSamTemplate(blueprint.endpoints).toYaml
   Files.write(Paths.get("template.yaml"), yaml.getBytes(UTF_8))
