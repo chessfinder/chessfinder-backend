@@ -24,10 +24,11 @@ jobs:
         shell: bash
         run: |
           sbt -v "compile;"
-      # - name: Test Code
-      #   shell: bash
-      #   run: |
-      #     # sbt -v "test;"
-      #     sbt -v "compile;"
+      - name: Test Code
+        shell: bash
+        run: |
+          docker compose -f ./src/test/resources/docker-compose.yaml --env-file ./src/test/resources/.env up
+          sbt -v "test;"
+          docker compose down
 
 
