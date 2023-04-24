@@ -60,6 +60,11 @@ object Dependencies {
     )
   }
 
+  lazy val tagging = {
+    val version = "2.3.4"
+    Seq("com.softwaremill.common" %% "tagging" % version)
+  }
+
   lazy val `typesafe-config` = {
     val version = "1.4.2"
     Seq("com.typesafe" % "config" % version)
@@ -130,17 +135,35 @@ object Dependencies {
   }
 
   lazy val `zio-logging` = {
-    val zioVersion     = "2.1.11"
-    val slf4jVersion   = "2.0.7"
-    val logbackVersion = "1.2.10"
+    val zioVersion      = "2.1.11"
+    val slf4jVersion    = "2.0.7"
+    val logbackVersion  = "1.2.10"
     val logstashVersion = "7.3"
     Seq(
-      "dev.zio"       %% "zio-logging"       % zioVersion,
-      "dev.zio"       %% "zio-logging-slf4j2" % zioVersion,
-      "ch.qos.logback" % "logback-core"      % logbackVersion,
-      "ch.qos.logback" % "logback-classic"   % logbackVersion,
-      "org.slf4j"      % "slf4j-api"         % slf4jVersion,
+      "dev.zio"             %% "zio-logging"              % zioVersion,
+      "dev.zio"             %% "zio-logging-slf4j2"       % zioVersion,
+      "ch.qos.logback"       % "logback-core"             % logbackVersion,
+      "ch.qos.logback"       % "logback-classic"          % logbackVersion,
+      "org.slf4j"            % "slf4j-api"                % slf4jVersion,
       "net.logstash.logback" % "logstash-logback-encoder" % logstashVersion
+    )
+  }
+
+  lazy val `zio-dynamodb` = {
+    val version = "0.2.9"
+    Seq("dev.zio" %% "zio-dynamodb" % version)
+  }
+
+  lazy val `zio-aws` = {
+    val version = "6.20.42.1"
+    Seq("dev.zio" %% "zio-aws-netty" % version)
+  }
+
+  lazy val `zio-schema` = {
+    val version = "0.4.10"
+    Seq(
+      "dev.zio" %% "zio-schema"            % version,
+      "dev.zio" %% "zio-schema-derivation" % version
     )
   }
 
@@ -150,7 +173,18 @@ object Dependencies {
   // }
 
   val prod: Seq[ModuleID] =
-    zio ++ tapir ++ scalachess ++ `zio-http` ++ circe ++ `circe-config` ++ `typesafe-config` ++ `zio-lambda` ++ `zio-logging`
+    zio ++
+      tapir ++
+      scalachess ++
+      `zio-http` ++
+      circe ++
+      `circe-config` ++
+      `typesafe-config` ++
+      `zio-lambda` ++
+      `zio-logging` ++
+      `zio-schema` ++
+      `zio-aws` ++
+      `zio-dynamodb`
 
   val tests: Seq[ModuleID] =
     (munit ++ scalaCheck ++ `zio-test` ++ wiremock ++ `zio-mock`).map(_ % Test)

@@ -1,16 +1,17 @@
 package chessfinder
 
 import sttp.tapir.serverless.aws.sam.*
-import chessfinder.api.ControllerBlueprint
+import chessfinder.api.{ SyncController, AsyncController}
 import java.nio.charset.StandardCharsets.UTF_8
 import java.nio.file.{ Files, Paths }
 import scala.concurrent.duration.{ Duration, DurationInt, FiniteDuration }
 
-object SamTemplate extends App {
+object SamTemplate extends App:
 
   val organization = "eudemonia"
-  val version      = "newborn"
-  val blueprint    = ControllerBlueprint(version)
+  val syncController    = SyncController("newborn")
+  val asyncController    = AsyncController("async")
+  val endpoints = syncController.endpoints ++ asyncController.endpoints
 
   val jarPath = Paths.get("target/scala-3.2.2/chessfinder-lambda.jar").toAbsolutePath.toString
 
@@ -24,6 +25,6 @@ object SamTemplate extends App {
     memorySize = 1024,
     timeout = 29.seconds
   )
-  val yaml = AwsSamInterpreter(samOptions).toSamTemplate(blueprint.endpoints).toYaml
+  val yaml = AwsSamInterpreter(samOptions).toSamTemplate(endpoints).toYaml
   Files.write(Paths.get("template.yaml"), yaml.getBytes(UTF_8))
-}
+

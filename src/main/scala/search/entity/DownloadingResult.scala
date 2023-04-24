@@ -4,7 +4,7 @@ package search.entity
 import cats.data.NonEmptySeq
 import sttp.model.Uri
 
-case class DownloadingResult(games: HistoricalGames, unreachableArchives: List[Uri])
+case class FetchingResult(games: Seq[HistoricalGame], unreachableArchives: Seq[Uri])
 
-object DownloadingResult:
-  val empty = DownloadingResult(List.empty, List.empty)
+object FetchingResult:
+  val empty = FetchingResult(List.empty, List.empty)

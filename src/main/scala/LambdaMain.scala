@@ -18,7 +18,7 @@ import sttp.tapir.redoc.RedocUIOptions
 import sttp.apispec.openapi.circe.yaml.*
 import sttp.tapir.server.*
 import chessfinder.search.BoardValidator
-import chessfinder.search.GameDownloader
+import chessfinder.search.GameFetcher
 import chessfinder.search.Searcher
 import chessfinder.client.chess_com.ChessDotComClient
 import com.typesafe.config.ConfigFactory
@@ -43,24 +43,34 @@ import sttp.tapir.serverless.aws.lambda.zio.ZLambdaHandler
 import sttp.tapir.ztapir.ZServerEndpoint
 import sttp.tapir.ztapir.RIOMonadError
 import zio.{ Runtime, Unsafe }
-import chessfinder.api.{ ControllerBlueprint, DependentController }
+import chessfinder.api.{ SyncController, AsyncController }
 import com.amazonaws.services.lambda.runtime.RequestStreamHandler
 import zio.logging.*
 import chessfinder.client.ZLoggingAspect
 import zio.logging.backend.SLF4J
+import chessfinder.api.ApiVersion
+import chessfinder.search.repo.{UserRepo, GameRepo, TaskRepo}
+import zio.aws.netty
+import zio.aws.core.config.AwsConfig
+import persistence.core.DefaultDynamoDBExecutor
+import zio.dynamodb.*
 
 object LambdaMain extends RequestStreamHandler:
 
   val organization = "eudemonia"
-  val version      = "newborn"
 
-  val blueprint  = ControllerBlueprint(version)
-  val controller = DependentController(blueprint)
+  val syncController = SyncController.Impl(SyncController("newborn"))
+  val asyncController = AsyncController.Impl(AsyncController("async"))
 
-  val handler = ZLambdaHandler.withMonadError(controller.rest)
+  type AllGameFinders = GameFinder[ApiVersion.Newborn.type] & GameFinder[ApiVersion.Async.type]
+  val handler = ZLambdaHandler.withMonadError(syncController.rest.map(_.widen[AllGameFinders]) ++ asyncController.rest.map(_.widen[AllGameFinders]))
 
   private val config      = ConfigFactory.load()
   private val configLayer = ZLayer.succeed(config)
+
+  private val dynamodbLayer: TaskLayer[DynamoDBExecutor] =
+    val in = ((netty.NettyHttpClient.default >+> AwsConfig.default) ++ configLayer)
+    in >>> DefaultDynamoDBExecutor.layer
 
   private lazy val clientLayer =
     Client.default.map(z => z.update(_ @@ ZLoggingAspect())).orDie
@@ -73,10 +83,15 @@ object LambdaMain extends RequestStreamHandler:
         configLayer,
         clientLayer,
         BoardValidator.Impl.layer,
-        GameFinder.Impl.layer,
+        GameFinder.Impl.layer[ApiVersion.Newborn.type],
+        GameFinder.Impl.layer[ApiVersion.Async.type],
         Searcher.Impl.layer,
-        GameDownloader.Impl.layer,
+        GameFetcher.Impl.layer,
+        GameFetcher.Local.layer,
         ChessDotComClient.Impl.layer,
+        UserRepo.Impl.layer,
+        GameRepo.Impl.layer,
+        dynamodbLayer,
         logging
       )
 

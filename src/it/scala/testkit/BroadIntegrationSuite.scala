@@ -3,6 +3,6 @@ package testkit
 
 import munit.FunSuite
 
-trait IntegrationSuite:
+trait BroadIntegrationSuite:
 
-  InitIntegration.run
+  InitBroadIntegrationEnv.run
