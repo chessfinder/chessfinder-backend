@@ -18,6 +18,7 @@ import search.entity.*
 import chessfinder.search.repo.*
 import chessfinder.api.TaskStatusResponse
 import chessfinder.api.ApiVersion
+import java.util.UUID
 
 trait Mocks:
   object BoardValidatorMock extends Mock[BoardValidator]:
@@ -122,7 +123,7 @@ trait Mocks:
       }
 
   object TaskRepoMock extends Mock[TaskRepo]:
-    object InitiateTask     extends Effect[TaskId, BrokenLogic, Unit]
+    object InitiateTask     extends Effect[(TaskId, Int), BrokenLogic, Unit]
     object GetTask          extends Effect[TaskId, BrokenLogic, TaskStatusResponse]
     object SuccessIncrement extends Effect[TaskId, BrokenLogic, Unit]
     object FailureIncrement extends Effect[TaskId, BrokenLogic, Unit]
@@ -132,8 +133,8 @@ trait Mocks:
         for proxy <- ZIO.service[Proxy]
         yield new:
 
-          override def initiate(taskId: TaskId): φ[Unit] =
-            proxy(InitiateTask, taskId)
+          override def initiate(taskId: TaskId, total: Int): φ[Unit] =
+            proxy(InitiateTask, taskId, total)
 
           override def get(taskId: TaskId): φ[TaskStatusResponse] =
             proxy(GetTask, taskId)

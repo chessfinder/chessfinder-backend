@@ -36,7 +36,7 @@ object GameFetcher:
       val archives = client
         .archives(user.userName)
         .mapError {
-          case ClientError.ProfileNotFound(userName) => BrokenLogic.ProfileNotFound(userName)
+          case ClientError.ProfileNotFound(userName) => BrokenLogic.ProfileNotFound(user)
           case _                                     => BrokenLogic.ServiceOverloaded
         }
       val games = for

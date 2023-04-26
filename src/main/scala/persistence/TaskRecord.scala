@@ -42,8 +42,8 @@ case class TaskRecord(
 
 object TaskRecord:
 
-  def apply(task_id: TaskId): TaskRecord = 
-    TaskRecord(task_id, 0, 0, 0)
+  def apply(task_id: TaskId, total: Int): TaskRecord = 
+    TaskRecord(task_id, 0, 0, total)
 
   def apply(
       task_id: TaskId,

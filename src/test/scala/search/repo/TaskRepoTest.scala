@@ -47,10 +47,10 @@ object TaskRepoTest extends ZIOSpecDefault with NarrowIntegrationSuite:
       suite("initiate")(
         test("should create new task in the database") {
           val taskId = TaskId(UUID.randomUUID())
-          val expectedResult = TaskRecord(taskId)
+          val expectedResult = TaskRecord(taskId, 15)
           
           for
-            _ <- TaskRepo.initiate(taskId)
+            _ <- TaskRepo.initiate(taskId, 15)
             actualResult <- TaskRecord.Table.get[TaskRecord](taskId)
             result      <- assertTrue(actualResult == Right(expectedResult))
           yield result

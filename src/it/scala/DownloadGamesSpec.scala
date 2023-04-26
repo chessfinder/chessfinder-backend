@@ -40,7 +40,7 @@ import chessfinder.persistence.UserRecord
 import chessfinder.persistence.PlatformType
 import chessfinder.persistence.GameRecord
 
-object DownlaodGamesSpec extends ZIOSpecDefault with BroadIntegrationSuite:
+object DownloadGamesSpec extends ZIOSpecDefault with BroadIntegrationSuite:
 
   protected lazy val `chess.com` = ClientBackdoor("/chess_com")
   protected lazy val clientLayer = Client.default.orDie
@@ -56,7 +56,7 @@ object DownlaodGamesSpec extends ZIOSpecDefault with BroadIntegrationSuite:
       test("should check that user exists and download all the user's games") {
         val userName = RandomReadableString()
         val userStub = `chess.com`
-          .expectsEndpoint("GET", "/pub/player/${userName}")
+          .expectsEndpoint("GET", s"/pub/player/${userName}")
           .returnsJson(
             s"""|
                 |{
@@ -121,7 +121,7 @@ object DownlaodGamesSpec extends ZIOSpecDefault with BroadIntegrationSuite:
               s"http://localhost:8080/api/async/task?taskId=${taskResponse.taskId.toString()}"
             )
             status <- response.body.to[TaskStatusResponse]
-            _      <- ZIO.sleep(ZDuration.fromScala(1.seconds))
+            // _      <- ZIO.sleep(ZDuration.fromScala(1.seconds))
           yield status
 
         def makeExpectedTaskStatus(actualResult: TaskStatusResponse) =
@@ -148,6 +148,19 @@ object DownlaodGamesSpec extends ZIOSpecDefault with BroadIntegrationSuite:
         val expectedAmountOfGames = 9
 
         for
+          _ <- Console.printLine("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
+          _ <- Console.printLine("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
+          _ <- Console.printLine("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
+          _ <- Console.printLine("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
+          _ <- Console.printLine("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
+          _ <- Console.printLine("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
+          _ <- Console.printLine("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
+          _ <- Console.printLine("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
+          _ <- Console.printLine("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
+          _ <- Console.printLine("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
+          _ <- Console.printLine("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
+          _ <- Console.printLine("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
+          _ <- Console.printLine("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
           _                <- userStub
           _                <- archivesStub
           _                <- `2022-07`
@@ -155,7 +168,7 @@ object DownlaodGamesSpec extends ZIOSpecDefault with BroadIntegrationSuite:
           taskReponse      <- createTask
           actualTaskStatus <- getTaskStatus(taskReponse).repeatUntil(_.pending == 0)
           expectedTaskStatus = makeExpectedTaskStatus(actualTaskStatus)
-          equality          <- assertTrue(actualTaskStatus == actualTaskStatus)
+          equality          <- assertTrue(expectedTaskStatus == actualTaskStatus)
           cachedGames       <- checkGames
           gameAreCached     <- assertTrue(cachedGames.length == expectedAmountOfGames)
           userStubCheck     <- `chess.com`.check(1, "GET", s"/pub/player/${userName}")

@@ -124,7 +124,7 @@ object GameFetcherTest extends ZIOSpecDefault with Mocks:
             .fetch[ApiVersion.Newborn.type](user)
             .provide(mock, GameFetcher.Impl.layer)
 
-          assertZIO(actualResult.exit)(Assertion.fails(Assertion.equalTo(ProfileNotFound(userName))))
+          assertZIO(actualResult.exit)(Assertion.fails(Assertion.equalTo(ProfileNotFound(user))))
 
         },
         test("when user does not have any archive should return NoGameAvaliable") {
@@ -187,7 +187,7 @@ object GameFetcherTest extends ZIOSpecDefault with Mocks:
 
           val getUser = UserRepoMock.GetUser(
             assertion = Assertion.equalTo(user),
-            result = Expectation.failure(BrokenLogic.ProfileNotFound(userName))
+            result = Expectation.failure(BrokenLogic.ProfileNotFound(user))
           )
 
           val mock = (getUser).toLayer
@@ -196,7 +196,7 @@ object GameFetcherTest extends ZIOSpecDefault with Mocks:
             .fetch[ApiVersion.Async.type](user)
             .provide(mock, GameRepoMock.empty, GameFetcher.Local.layer)
 
-          assertZIO(actualResult.exit)(Assertion.fails(Assertion.equalTo(ProfileNotFound(userName))))
+          assertZIO(actualResult.exit)(Assertion.fails(Assertion.equalTo(ProfileNotFound(user))))
         },
         test("when user does not have any game should return NoGameAvaliable") {
           val userName               = UserName("user")

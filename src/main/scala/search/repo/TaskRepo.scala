@@ -21,7 +21,7 @@ trait TaskRepo:
 
   def failureIncrement(taskId: TaskId): φ[Unit]
 
-  def initiate(taskId: TaskId): φ[Unit]
+  def initiate(taskId: TaskId, total: Int): φ[Unit]
 
 object TaskRepo:
 
@@ -34,8 +34,8 @@ object TaskRepo:
   def failureIncrement(taskId: TaskId): ψ[TaskRepo, Unit] =
     ψ.serviceWithZIO[TaskRepo](_.failureIncrement(taskId))
 
-  def initiate(taskId: TaskId): ψ[TaskRepo, Unit] =
-    ψ.serviceWithZIO[TaskRepo](_.initiate(taskId))
+  def initiate(taskId: TaskId, total: Int): ψ[TaskRepo, Unit] =
+    ψ.serviceWithZIO[TaskRepo](_.initiate(taskId, total))
 
   class Impl(executor: DynamoDBExecutor) extends TaskRepo:
     private val layer = ZLayer.succeed(executor)
@@ -61,8 +61,8 @@ object TaskRepo:
           else ZIO.fail(BrokenLogic.TaskProgressOverflown(taskId))
       yield ()
 
-    override def initiate(taskId: TaskId): φ[Unit] = 
-      putTaskRecord(TaskRecord(taskId))
+    override def initiate(taskId: TaskId, total: Int): φ[Unit] = 
+      putTaskRecord(TaskRecord(taskId, total))
 
     private def getTaskRecord(taskId: TaskId): φ[TaskRecord] =
       TaskRecord.Table

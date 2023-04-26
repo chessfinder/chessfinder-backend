@@ -1,10 +1,9 @@
 package chessfinder
 package search.entity
 
-import cats.data.NonEmptySeq
 import sttp.model.Uri
 
-case class FetchingResult(games: Seq[HistoricalGame], unreachableArchives: Seq[Uri])
+final case class DownloadingResult(failedArchives: Seq[Uri])
 
-object FetchingResult:
-  val empty = FetchingResult(List.empty, List.empty)
+object DownloadingResult:
+  val empty = DownloadingResult(List.empty)

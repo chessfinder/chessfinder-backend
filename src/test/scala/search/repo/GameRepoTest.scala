@@ -75,7 +75,7 @@ object GameRepoTest extends ZIOSpecDefault with NarrowIntegrationSuite:
             GameRecord.Table.putMany(game1, game2, game3)
 
           val expectedResult = Set(game1.toGame, game2.toGame, game3.toGame)
-          val fetchedDate    = GameRepo.list(user.idetified(userId))
+          val fetchedDate    = GameRepo.list(user.identified(userId))
 
           for
             _            <- fillData

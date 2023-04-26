@@ -52,7 +52,7 @@ object GameFinderTest extends ZIOSpecDefault with Mocks:
       val gameDownloaderLayer = AsyncGameFetcherMock
         .Fetch(
           assertion = Assertion.equalTo(user),
-          result = Expectation.failure(ProfileNotFound(userName))
+          result = Expectation.failure(ProfileNotFound(user))
         )
         .toLayer
 
@@ -60,7 +60,7 @@ object GameFinderTest extends ZIOSpecDefault with Mocks:
         .find[ApiVersion.Async.type](board, platform, userName)
         .provide(boardValidatorLayer, SearcherMock.empty, gameDownloaderLayer, GameFinder.Impl.layer[ApiVersion.Async.type])
 
-      assertZIO(actualResult.exit)(Assertion.fails(Assertion.equalTo(ProfileNotFound(userName))))
+      assertZIO(actualResult.exit)(Assertion.fails(Assertion.equalTo(ProfileNotFound(user))))
 
     },
     test("when board is valid but user does not have any game method find should return NoGameAvaliable") {

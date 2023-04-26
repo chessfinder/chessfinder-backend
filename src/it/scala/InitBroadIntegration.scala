@@ -26,6 +26,7 @@ object InitBroadIntegrationEnv:
     setupDynamoDb()
     ConfigFactory.invalidateCaches()
     scala.concurrent.Future(Main.main(Array.empty[String]))(scala.concurrent.ExecutionContext.global)
+    Thread.sleep(3000)
 
   def setupMock() = WireMock.configureFor("localhost", 18443)
 
@@ -41,8 +42,9 @@ object InitBroadIntegrationEnv:
       val io: IO[Throwable, Unit] =
         val dependentIo =
           for
-            _ <- createSortedSetTableWithSingleKey(UserRecord.Table)
-            _ <- createSortedSetTableWithSingleKey(GameRecord.Table)
+            _ <- createSortedSetTableWithSingleKey(UserRecord.Table).catchNonFatalOrDie(_ => ZIO.unit)
+            _ <- createSortedSetTableWithSingleKey(GameRecord.Table).catchNonFatalOrDie(_ => ZIO.unit)
+            _ <- createUniqueTableWithSingleKey(TaskRecord.Table).catchNonFatalOrDie(_ => ZIO.unit)
           yield ()
         dependentIo.provide(dynamodbLayer)
 

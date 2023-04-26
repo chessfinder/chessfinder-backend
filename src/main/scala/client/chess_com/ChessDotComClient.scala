@@ -37,7 +37,7 @@ object ChessDotComClient:
   def profile(userName: UserName): κ[ChessDotComClient, Profile] =
     κ.serviceWithZIO[ChessDotComClient](_.profile(userName))
 
-  def srchives(userName: UserName): κ[ChessDotComClient, Archives] =
+  def archives(userName: UserName): κ[ChessDotComClient, Archives] =
     κ.serviceWithZIO[ChessDotComClient](_.archives(userName))
 
   def games(archiveLocation: Uri): κ[ChessDotComClient, Games] =

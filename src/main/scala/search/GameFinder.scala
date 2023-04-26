@@ -24,14 +24,14 @@ object GameFinder:
 
   class Impl[Version <: ApiVersion](
       validator: BoardValidator,
-      downloader: GameFetcher[Version],
+      fetcher: GameFetcher[Version],
       searcher: Searcher
   ) extends GameFinder[Version]:
     def find(board: SearchFen, platform: ChessPlatform, userName: UserName): φ[SearchResult] =
       for
         validBoard <- validator.validate(board)
         user = User(platform, userName)
-        games        <- downloader.fetch(user = user)
+        games        <- fetcher.fetch(user = user)
         searchResult <- findAll(games, validBoard)
       yield searchResult
 

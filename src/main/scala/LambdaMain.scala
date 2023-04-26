@@ -20,6 +20,8 @@ import sttp.tapir.server.*
 import chessfinder.search.BoardValidator
 import chessfinder.search.GameFetcher
 import chessfinder.search.Searcher
+import chessfinder.search.TaskStatusChecker
+import chessfinder.search.GameDownloader
 import chessfinder.client.chess_com.ChessDotComClient
 import com.typesafe.config.ConfigFactory
 import sttp.tapir.serverless.aws.lambda.LambdaHandler
@@ -43,27 +45,30 @@ import sttp.tapir.serverless.aws.lambda.zio.ZLambdaHandler
 import sttp.tapir.ztapir.ZServerEndpoint
 import sttp.tapir.ztapir.RIOMonadError
 import zio.{ Runtime, Unsafe }
-import chessfinder.api.{ SyncController, AsyncController }
+import chessfinder.api.{ AsyncController, SyncController }
 import com.amazonaws.services.lambda.runtime.RequestStreamHandler
 import zio.logging.*
 import chessfinder.client.ZLoggingAspect
 import zio.logging.backend.SLF4J
 import chessfinder.api.ApiVersion
-import chessfinder.search.repo.{UserRepo, GameRepo, TaskRepo}
+import chessfinder.search.repo.{ GameRepo, TaskRepo, UserRepo }
 import zio.aws.netty
 import zio.aws.core.config.AwsConfig
 import persistence.core.DefaultDynamoDBExecutor
 import zio.dynamodb.*
+import util.EndpointCombiner
 
 object LambdaMain extends RequestStreamHandler:
 
   val organization = "eudemonia"
 
-  val syncController = SyncController.Impl(SyncController("newborn"))
+  val syncController  = SyncController.Impl(SyncController("newborn"))
   val asyncController = AsyncController.Impl(AsyncController("async"))
 
   type AllGameFinders = GameFinder[ApiVersion.Newborn.type] & GameFinder[ApiVersion.Async.type]
-  val handler = ZLambdaHandler.withMonadError(syncController.rest.map(_.widen[AllGameFinders]) ++ asyncController.rest.map(_.widen[AllGameFinders]))
+  val handler = ZLambdaHandler.withMonadError(
+    EndpointCombiner.many(syncController.rest, asyncController.rest)
+  )
 
   private val config      = ConfigFactory.load()
   private val configLayer = ZLayer.succeed(config)
@@ -91,7 +96,11 @@ object LambdaMain extends RequestStreamHandler:
         ChessDotComClient.Impl.layer,
         UserRepo.Impl.layer,
         GameRepo.Impl.layer,
+        TaskRepo.Impl.layer,
+        TaskStatusChecker.Impl.layer,
+        GameDownloader.Impl.layer,
         dynamodbLayer,
+        ZLayer.succeed(zio.Random.RandomLive),
         logging
       )
 

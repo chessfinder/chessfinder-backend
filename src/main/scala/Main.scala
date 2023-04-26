@@ -24,17 +24,22 @@ import chessfinder.search.Searcher
 import chessfinder.client.chess_com.ChessDotComClient
 import com.typesafe.config.ConfigFactory
 import chessfinder.api.ApiVersion
-import chessfinder.search.repo.{UserRepo, GameRepo, TaskRepo}
+import chessfinder.search.repo.{ GameRepo, TaskRepo, UserRepo }
 import zio.aws.netty
 import zio.aws.core.config.AwsConfig
 import persistence.core.DefaultDynamoDBExecutor
 import zio.dynamodb.*
 import zio.logging.backend.SLF4J
+import util.EndpointCombiner
+import chessfinder.search.TaskStatusChecker
+import chessfinder.persistence.GameRecord
+import chessfinder.search.GameDownloader
+import sttp.tapir.server.ziohttp.*
 
 object Main extends ZIOAppDefault:
 
-  val organization            = "eudemonia"
-  
+  val organization = "eudemonia"
+
   val syncControllerBlueprint = SyncController("newborn")
   val syncController          = SyncController.Impl(syncControllerBlueprint)
 
@@ -52,13 +57,31 @@ object Main extends ZIOAppDefault:
 
   private val servers: List[OAServer] = List(OAServer(swaggerHost).description("Admin"))
   private val docsAsYaml: String = OpenAPIDocsInterpreter()
-    .toOpenAPI(syncControllerBlueprint.endpoints ++ asyncControllerBlueprint.endpoints, "ChessFinder", "newborn")
+    .toOpenAPI(
+      syncControllerBlueprint.endpoints ++ asyncControllerBlueprint.endpoints,
+      "ChessFinder",
+      "newborn"
+    )
     .servers(servers)
     .toYaml
 
   type AllGameFinders = GameFinder[ApiVersion.Newborn.type] & GameFinder[ApiVersion.Async.type]
 
-  private val zioInterpreter = ZioHttpInterpreter()
+  private val zioInterpreter =
+    ZioHttpInterpreter[Any](
+      ZioHttpServerOptions
+        .customiseInterceptors
+        .serverLog(
+          ZioHttpServerOptions
+            .defaultServerLog
+            .copy(
+              logWhenReceived = true,
+              logAllDecodeFailures = true
+            )
+        )
+        .options
+    )
+
   private val swaggerEndpoint: List[ZServerEndpoint[AllGameFinders, Any]] =
     val options = SwaggerUIOptions.default.copy(pathPrefix = List("docs", "swagger"))
     SwaggerUI[zio.RIO[AllGameFinders, *]](docsAsYaml, options = options)
@@ -67,9 +90,11 @@ object Main extends ZIOAppDefault:
     val options = RedocUIOptions.default.copy(pathPrefix = List("docs", "redoc"))
     Redoc[zio.RIO[AllGameFinders, *]]("ChessFinder", spec = docsAsYaml, options = options)
 
-  private val rest: List[ZServerEndpoint[AllGameFinders, Any]] = syncController.rest.map(_.widen[AllGameFinders]) ++ asyncController.rest.map(_.widen[AllGameFinders])
-  private val endpoints: List[ZServerEndpoint[AllGameFinders, Any]] =
-    syncController.rest.map(_.widen[AllGameFinders]) ++ asyncController.rest.map(_.widen[AllGameFinders]) ++ swaggerEndpoint ++ redocEndpoint
+  private val rest =
+    EndpointCombiner.many(asyncController.rest, syncController.rest)
+    // syncController.rest.map(_.widen[AllGameFinders]) ++ asyncController.rest.map(_.widen[AllGameFinders])
+  private val endpoints =
+    EndpointCombiner.many(EndpointCombiner.many(rest, swaggerEndpoint), redocEndpoint)
 
   val app =
     zioInterpreter.toHttp(endpoints).withDefaultErrorResponse
@@ -93,7 +118,11 @@ object Main extends ZIOAppDefault:
         GameFetcher.Local.layer,
         ChessDotComClient.Impl.layer,
         UserRepo.Impl.layer,
+        TaskRepo.Impl.layer,
         GameRepo.Impl.layer,
+        TaskStatusChecker.Impl.layer,
+        GameDownloader.Impl.layer,
         dynamodbLayer,
+        ZLayer.succeed(zio.Random.RandomLive),
         logging
       )

@@ -45,8 +45,7 @@
         <appender-ref ref="STDOUT" />
     </appender>
 
-    <variable name="ROOT_LOG_LEVEL" value="${ROOT_LOG_LEVEL:-ERROR}" />
-    <root level="${ROOT_LOG_LEVEL}">
+    <root level="INFO">
         <appender-ref ref="ASYNCSTDOUT" />
     </root>
 

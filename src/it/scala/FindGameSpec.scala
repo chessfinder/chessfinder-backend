@@ -17,7 +17,7 @@ import zio.*
 import testkit.BroadIntegrationSuite
 import zio.http.Body
 import client.ClientExt.*
-import api.DownloadAndFindResponse
+import api.FindResponse
 import zio.http.Client
 import io.circe.*
 import io.circe.parser
@@ -36,6 +36,7 @@ import chessfinder.search.entity.UserId
 import chessfinder.persistence.UserRecord
 import chessfinder.search.entity.UserIdentified
 import chessfinder.search.entity.ChessPlatform
+import zio.http.model.Method
 
 object FindGameSpec extends ZIOSpecDefault with BroadIntegrationSuite:
 
@@ -68,19 +69,19 @@ object FindGameSpec extends ZIOSpecDefault with BroadIntegrationSuite:
         def fillDate(games: Seq[GameRecord]) =
           GameRecord.Table.putMany(games*)
 
-        val `2022-07` = readGames(s"/pub/player/${userName}/games/2022/07").flatMap(fillDate)
+        val `2022-07` = readGames(s"samples/2022-07.json").flatMap(fillDate)
 
-        val `2022-08` = readGames(s"/pub/player/${userName}/games/2022/08").flatMap(fillDate)
+        val `2022-08` = readGames(s"samples/2022-08.json").flatMap(fillDate)
 
-        val `2022-09` = readGames(s"/pub/player/${userName}/games/2022/09").flatMap(fillDate)
+        val `2022-09` = readGames(s"samples/2022-09.json").flatMap(fillDate)
 
-        val `2022-10` = readGames(s"/pub/player/${userName}/games/2022/10").flatMap(fillDate)
+        val `2022-10` = readGames(s"samples/2022-10.json").flatMap(fillDate)
 
-        val `2022-11` = readGames(s"/pub/player/${userName}/games/2022/11").flatMap(fillDate)
+        val `2022-11` = readGames(s"samples/2022-11.json").flatMap(fillDate)
 
-        val expectedResult = DownloadAndFindResponse(
+        val expectedResult = FindResponse(
           resources = Seq(uri"https://www.chess.com/game/live/63025767719"),
-          message = "All games are successfully downloaded and analized."
+          message = "All games are successfully analized."
         )
 
         val findRequest =
@@ -94,8 +95,8 @@ object FindGameSpec extends ZIOSpecDefault with BroadIntegrationSuite:
             java.nio.charset.StandardCharsets.UTF_8
           )
           for
-            response   <- Client.request(url = "http://localhost:8080/api/async/board", content = body)
-            findResult <- response.body.to[DownloadAndFindResponse]
+            response   <- Client.request(method = Method.POST, url = "http://localhost:8080/api/async/board", content = body)
+            findResult <- response.body.to[FindResponse]
           yield findResult
 
         for {
