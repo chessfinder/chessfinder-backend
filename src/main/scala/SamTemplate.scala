@@ -16,7 +16,7 @@ object SamTemplate extends App:
   val jarPath = Paths.get("target/scala-3.2.2/chessfinder-lambda.jar").toAbsolutePath.toString
 
   val samOptions: AwsSamOptions = AwsSamOptions(
-    "Tests",
+    "Chessfinder",
     source = CodeSource(
       "java11",
       jarPath,
@@ -26,5 +26,5 @@ object SamTemplate extends App:
     timeout = 29.seconds
   )
   val yaml = AwsSamInterpreter(samOptions).toSamTemplate(endpoints).toYaml
-  Files.write(Paths.get("template.yaml"), yaml.getBytes(UTF_8))
+  Files.write(Paths.get(".infrastructure/api.yaml"), yaml.getBytes(UTF_8))
 

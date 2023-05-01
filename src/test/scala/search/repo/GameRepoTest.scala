@@ -33,8 +33,8 @@ import io.circe.*
 import chessfinder.util.RandomReadableString
 
 object GameRepoTest extends ZIOSpecDefault with NarrowIntegrationSuite:
-  protected lazy val configLayer =
-    ZLayer.fromZIO(ZIO.attempt(ConfigFactory.load()))
+  // protected lazy val configLayer =
+  //   ZLayer.fromZIO(ZIO.attempt(ConfigFactory.load()))
 
   private lazy val dynamodbLayer: TaskLayer[DynamoDBExecutor] =
     val in = ((netty.NettyHttpClient.default >+> AwsConfig.default) ++ configLayer)

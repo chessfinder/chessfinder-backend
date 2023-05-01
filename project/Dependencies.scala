@@ -85,7 +85,7 @@ object Dependencies {
   }
 
   lazy val `zio-config` = {
-    val version = "3.0.1"
+    val version = "4.0.0-RC14"
     Seq(
       "dev.zio" %% "zio-config"          % version,
       "dev.zio" %% "zio-config-typesafe" % version,
@@ -108,6 +108,13 @@ object Dependencies {
     Seq(
       "org.scalameta" %% "munit"            % version,
       "org.scalameta" %% "munit-scalacheck" % version
+    )
+  }
+
+  lazy val `zio-munit` = {
+    val version = "0.1.1"
+    Seq(
+      "com.github.poslegm" % "munit-zio_3" % version
     )
   }
 
@@ -178,8 +185,9 @@ object Dependencies {
       scalachess ++
       `zio-http` ++
       circe ++
-      `circe-config` ++
-      `typesafe-config` ++
+      // `circe-config` ++
+      // `typesafe-config` ++
+      `zio-config` ++
       `zio-lambda` ++
       `zio-logging` ++
       `zio-schema` ++
@@ -187,5 +195,5 @@ object Dependencies {
       `zio-dynamodb`
 
   val tests: Seq[ModuleID] =
-    (munit ++ scalaCheck ++ `zio-test` ++ wiremock ++ `zio-mock`).map(_ % Test)
+    (munit ++ scalaCheck ++ `zio-test` ++ wiremock ++ `zio-mock` ++ `zio-munit`).map(_ % Test)
 }

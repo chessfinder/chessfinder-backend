@@ -6,7 +6,7 @@ import search.entity.{UserName, User}
 import sttp.model.Uri
 import chessfinder.search.entity.TaskId
 
-trait BrokenLogic(val msg: String)
+sealed trait BrokenLogic(val msg: String)
 object BrokenLogic:
   case object InvalidSearchBoard                 extends BrokenLogic(s"Invalid board!")
   case object InvalidGame                        extends BrokenLogic(s"Invalid game!")

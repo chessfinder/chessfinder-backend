@@ -44,8 +44,7 @@ object DownloadGamesSpec extends ZIOSpecDefault with BroadIntegrationSuite:
 
   protected lazy val `chess.com` = ClientBackdoor("/chess_com")
   protected lazy val clientLayer = Client.default.orDie
-  protected lazy val configLayer =
-    ZLayer.fromZIO(ZIO.attempt(ConfigFactory.load()))
+ 
 
   private lazy val dynamodbLayer: TaskLayer[DynamoDBExecutor] =
     val in = ((netty.NettyHttpClient.default >+> AwsConfig.default) ++ configLayer)

@@ -17,10 +17,14 @@ import zio.aws.netty
 import zio.aws.core.config.AwsConfig
 import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider
 import com.typesafe.config.{ Config, ConfigFactory }
-import io.circe.config.syntax.*
-import io.circe.config.*
+import zio.Runtime
+import zio.config.typesafe.TypesafeConfigProvider
+
 
 object InitNarrowIntegrationEnv:
+
+  val runtime = zio.Runtime.default
+  val configLayer = Runtime.setConfigProvider(TypesafeConfigProvider.fromResourcePath())
 
   lazy val run =
     setupMock()
@@ -33,11 +37,8 @@ object InitNarrowIntegrationEnv:
     WireMock.removeAllMappings()
 
   def setupDynamoDb() =
-
-    val rootConfigLayer: TaskLayer[Config] = ZLayer.fromZIO(ZIO.attempt(ConfigFactory.load()))
-
     val dynamodbLayer: TaskLayer[DynamoDBExecutor] = 
-      val in = ((netty.NettyHttpClient.default >+> AwsConfig.default) ++ rootConfigLayer) 
+      val in = ((netty.NettyHttpClient.default >+> AwsConfig.default)) 
       in >>> DefaultDynamoDBExecutor.layer
 
     Try {
@@ -48,9 +49,8 @@ object InitNarrowIntegrationEnv:
             _ <- createSortedSetTableWithSingleKey(GameRecord.Table).catchNonFatalOrDie(_ => ZIO.unit)
             _ <- createUniqueTableWithSingleKey(TaskRecord.Table).catchNonFatalOrDie(_ => ZIO.unit)
           yield ()
-        dependentIo.provide(dynamodbLayer)
+        dependentIo.provide(configLayer >+> dynamodbLayer)
 
-      val runtime = zio.Runtime.default
       Await.result(Unsafe.unsafe(implicit unsafe => runtime.unsafe.runToFuture(io)).future, 10.seconds)
     }
 

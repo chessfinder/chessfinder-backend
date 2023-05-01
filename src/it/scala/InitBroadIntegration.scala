@@ -1,7 +1,6 @@
 package chessfinder
 
 import com.github.tomakehurst.wiremock.client.WireMock
-import com.typesafe.config.ConfigFactory
 import chessfinder.persistence.core.*
 import chessfinder.persistence.config.*
 import chessfinder.persistence.*
@@ -15,10 +14,13 @@ import zio.aws.netty
 import zio.aws.core.config.AwsConfig
 import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider
 import com.typesafe.config.{ Config, ConfigFactory }
-import io.circe.config.syntax.*
-import io.circe.config.*
+import zio.Runtime
+import zio.config.typesafe.TypesafeConfigProvider
 
 object InitBroadIntegrationEnv:
+
+  val runtime = Runtime.default
+  val configLayer = Runtime.setConfigProvider(TypesafeConfigProvider.fromResourcePath())
 
   lazy val run =
     setupMock()
@@ -46,9 +48,8 @@ object InitBroadIntegrationEnv:
             _ <- createSortedSetTableWithSingleKey(GameRecord.Table).catchNonFatalOrDie(_ => ZIO.unit)
             _ <- createUniqueTableWithSingleKey(TaskRecord.Table).catchNonFatalOrDie(_ => ZIO.unit)
           yield ()
-        dependentIo.provide(dynamodbLayer)
+        dependentIo.provide(configLayer >+> dynamodbLayer)
 
-      val runtime = zio.Runtime.default
       Await.result(Unsafe.unsafe(implicit unsafe => runtime.unsafe.runToFuture(io)).future, 10.seconds)
     }
 

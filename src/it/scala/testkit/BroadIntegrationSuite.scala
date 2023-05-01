@@ -6,3 +6,4 @@ import munit.FunSuite
 trait BroadIntegrationSuite:
 
   InitBroadIntegrationEnv.run
+  val configLayer = InitBroadIntegrationEnv.configLayer

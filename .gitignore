@@ -13,5 +13,5 @@ target
 .bloop/
 .metals/
 .vscode/
-template.yaml
+# .infrastructure/api.yaml
 

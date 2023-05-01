@@ -57,6 +57,7 @@ import zio.aws.core.config.AwsConfig
 import persistence.core.DefaultDynamoDBExecutor
 import zio.dynamodb.*
 import util.EndpointCombiner
+import zio.config.typesafe.TypesafeConfigProvider
 
 object LambdaMain extends RequestStreamHandler:
 
@@ -70,22 +71,24 @@ object LambdaMain extends RequestStreamHandler:
     EndpointCombiner.many(syncController.rest, asyncController.rest)
   )
 
-  private val config      = ConfigFactory.load()
-  private val configLayer = ZLayer.succeed(config)
+  private val loggingLayer = Runtime.removeDefaultLoggers >>> SLF4J.slf4j
+
+  private val configLayer = Runtime.setConfigProvider(TypesafeConfigProvider.fromResourcePath())
 
   private val dynamodbLayer: TaskLayer[DynamoDBExecutor] =
-    val in = ((netty.NettyHttpClient.default >+> AwsConfig.default) ++ configLayer)
+    val in = ((netty.NettyHttpClient.default >+> AwsConfig.default))
     in >>> DefaultDynamoDBExecutor.layer
 
   private lazy val clientLayer =
     Client.default.map(z => z.update(_ @@ ZLoggingAspect())).orDie
 
+  
   def process(input: InputStream, output: OutputStream) =
-    val logging = Runtime.removeDefaultLoggers >>> SLF4J.slf4j
     handler
       .process[AwsRequest](input, output)
       .provide(
         configLayer,
+        loggingLayer,
         clientLayer,
         BoardValidator.Impl.layer,
         GameFinder.Impl.layer[ApiVersion.Newborn.type],
@@ -100,8 +103,7 @@ object LambdaMain extends RequestStreamHandler:
         TaskStatusChecker.Impl.layer,
         GameDownloader.Impl.layer,
         dynamodbLayer,
-        ZLayer.succeed(zio.Random.RandomLive),
-        logging
+        ZLayer.succeed(zio.Random.RandomLive)
       )
 
   override def handleRequest(input: InputStream, output: OutputStream, context: Context): Unit =

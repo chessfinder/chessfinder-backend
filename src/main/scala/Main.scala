@@ -35,10 +35,16 @@ import chessfinder.search.TaskStatusChecker
 import chessfinder.persistence.GameRecord
 import chessfinder.search.GameDownloader
 import sttp.tapir.server.ziohttp.*
+import zio.logging.*
+import zio.config.typesafe.TypesafeConfigProvider
 
 object Main extends ZIOAppDefault:
 
   val organization = "eudemonia"
+
+  private val configLayer = Runtime.setConfigProvider(TypesafeConfigProvider.fromResourcePath())
+  // private val loggingLayer = Runtime.removeDefaultLoggers >>> SLF4J.slf4j
+  private val loggingLayer = Runtime.removeDefaultLoggers >>> zio.logging.consoleJsonLogger()
 
   val syncControllerBlueprint = SyncController("newborn")
   val syncController          = SyncController.Impl(syncControllerBlueprint)
@@ -46,35 +52,35 @@ object Main extends ZIOAppDefault:
   val asyncControllerBlueprint = AsyncController("async")
   val asyncController          = AsyncController.Impl(asyncControllerBlueprint)
 
-  private val swaggerHost: String = s"http://localhost:8080"
-
-  private val config      = ConfigFactory.load()
-  private val configLayer = ZLayer.succeed(config)
-
   private val dynamodbLayer: TaskLayer[DynamoDBExecutor] =
     val in = ((netty.NettyHttpClient.default >+> AwsConfig.default) ++ configLayer)
     in >>> DefaultDynamoDBExecutor.layer
 
-  private val servers: List[OAServer] = List(OAServer(swaggerHost).description("Admin"))
+  private val servers: List[OAServer] = List(
+    OAServer("http://localhost:8080").description("Chessfinder APIs")
+  )
   private val docsAsYaml: String = OpenAPIDocsInterpreter()
     .toOpenAPI(
       syncControllerBlueprint.endpoints ++ asyncControllerBlueprint.endpoints,
       "ChessFinder",
-      "newborn"
+      "Backend"
     )
     .servers(servers)
     .toYaml
 
-  type AllGameFinders = GameFinder[ApiVersion.Newborn.type] & GameFinder[ApiVersion.Async.type]
-
   private val zioInterpreter =
     ZioHttpInterpreter[Any](
-      ZioHttpServerOptions
-        .customiseInterceptors
+      ZioHttpServerOptions.customiseInterceptors
         .serverLog(
-          ZioHttpServerOptions
-            .defaultServerLog
+          ZioHttpServerOptions.defaultServerLog
             .copy(
+              doLogWhenReceived = msg => ZIO.logInfo(msg),
+              doLogWhenHandled = (msg: String, exOpt: Option[Throwable]) =>
+                ZIO.logInfoCause(msg, exOpt.map(e => Cause.fail(e)).getOrElse(Cause.empty)),
+              doLogAllDecodeFailures = (msg: String, exOpt: Option[Throwable]) =>
+                ZIO.logInfoCause(msg, exOpt.map(e => Cause.fail(e)).getOrElse(Cause.empty)),
+              doLogExceptions = (msg: String, ex: Throwable) => ZIO.logErrorCause(msg, Cause.fail(ex)),
+              noLog = ZIO.unit,
               logWhenReceived = true,
               logAllDecodeFailures = true
             )
@@ -82,17 +88,17 @@ object Main extends ZIOAppDefault:
         .options
     )
 
-  private val swaggerEndpoint: List[ZServerEndpoint[AllGameFinders, Any]] =
+  private val swaggerEndpoint =
     val options = SwaggerUIOptions.default.copy(pathPrefix = List("docs", "swagger"))
-    SwaggerUI[zio.RIO[AllGameFinders, *]](docsAsYaml, options = options)
+    SwaggerUI[zio.RIO[Any, *]](docsAsYaml, options = options)
 
-  private val redocEndpoint: List[ZServerEndpoint[AllGameFinders, Any]] =
+  private val redocEndpoint =
     val options = RedocUIOptions.default.copy(pathPrefix = List("docs", "redoc"))
-    Redoc[zio.RIO[AllGameFinders, *]]("ChessFinder", spec = docsAsYaml, options = options)
+    Redoc[zio.RIO[Any, *]]("ChessFinder", spec = docsAsYaml, options = options)
 
   private val rest =
     EndpointCombiner.many(asyncController.rest, syncController.rest)
-    // syncController.rest.map(_.widen[AllGameFinders]) ++ asyncController.rest.map(_.widen[AllGameFinders])
+
   private val endpoints =
     EndpointCombiner.many(EndpointCombiner.many(rest, swaggerEndpoint), redocEndpoint)
 
@@ -101,8 +107,9 @@ object Main extends ZIOAppDefault:
 
   private lazy val clientLayer = Client.default.orDie
 
-  private val logging = Runtime.removeDefaultLoggers >>> SLF4J.slf4j
+  override val bootstrap = configLayer >+> loggingLayer
 
+  ZIOAspect
   def run =
     Server
       .serve(app)
@@ -123,6 +130,5 @@ object Main extends ZIOAppDefault:
         TaskStatusChecker.Impl.layer,
         GameDownloader.Impl.layer,
         dynamodbLayer,
-        ZLayer.succeed(zio.Random.RandomLive),
-        logging
+        ZLayer.succeed(zio.Random.RandomLive)
       )

@@ -20,11 +20,16 @@ import testkit.parser.JsonReader
 import chessfinder.client.ClientError.ArchiveNotFound
 import testkit.NarrowIntegrationSuite
 
-object ChessDotComClientTest extends ZIOSpecDefault with NarrowIntegrationSuite:
-  protected lazy val configLayer =
-    ZLayer.fromZIO(ZIO.attempt(ConfigFactory.load()))
+import com.github.tomakehurst.wiremock.client.WireMock
 
-  protected lazy val `chess.com` = ClientBackdoor("/chess_com")
+object ChessDotComClientTest extends ZIOSpecDefault with NarrowIntegrationSuite:
+  // protected lazy val configLayer =
+  //   ZLayer.fromZIO(ZIO.attempt(ConfigFactory.load()))
+
+  protected lazy val `chess.com` = 
+    WireMock.configureFor("localhost", 18443)
+    ClientBackdoor("/chess_com")
+
   protected lazy val env =
     ((Client.default ++ configLayer) >>> ChessDotComClient.Impl.layer).orDie
 
@@ -278,4 +283,4 @@ object ChessDotComClientTest extends ZIOSpecDefault with NarrowIntegrationSuite:
           assertZIO(stubVerification)(Assertion.isUnit)
         }
       )
-    )
+    ) @@ TestAspect.sequential

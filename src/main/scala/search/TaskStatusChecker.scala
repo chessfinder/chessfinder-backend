@@ -22,6 +22,8 @@ import api.ApiVersion
 import izumi.reflect.Tag
 import chessfinder.api.TaskResponse
 import chessfinder.api.TaskStatusResponse
+import aspect.Span
+import zio.ZIOAspect
 
 trait TaskStatusChecker:
 
@@ -29,8 +31,10 @@ trait TaskStatusChecker:
 
 object TaskStatusChecker:
 
+  import zio.logging.fileAsyncJsonLogger
+
   def check(taskId: TaskId): ψ[TaskStatusChecker, TaskStatusResponse] = 
-    ZIO.serviceWithZIO[TaskStatusChecker](_.check(taskId))
+    ZIO.serviceWithZIO[TaskStatusChecker](_.check(taskId)) @@ Span.log("TaskStatusChecker") @@ ZIOAspect.annotated("user", "muser")
 
   class Impl(taskRepo: TaskRepo) extends TaskStatusChecker:
 
