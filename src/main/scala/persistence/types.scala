@@ -11,12 +11,12 @@ enum PlatformType:
 
   def toPlatform = this match
     case CHESS_DOT_COM => ChessPlatform.ChessDotCom
-    case LICHESS => ChessPlatform.Lichess
+    case LICHESS       => ChessPlatform.Lichess
 
 object PlatformType:
   def fromPlatform(p: ChessPlatform) = p match
     case ChessPlatform.ChessDotCom => CHESS_DOT_COM
-    case ChessPlatform.Lichess => LICHESS
+    case ChessPlatform.Lichess     => LICHESS
 
-  def fromString(str: String): Either[String, PlatformType] = 
+  def fromString(str: String): Either[String, PlatformType] =
     Try(PlatformType.valueOf(str)).toEither.left.map(_.getMessage())

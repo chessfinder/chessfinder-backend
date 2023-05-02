@@ -8,5 +8,5 @@ import scala.util.Try
 @Deprecated
 object UriParser:
 
-  def apply(str: String): Try[Uri] = 
+  def apply(str: String): Try[Uri] =
     Uri.parse(str).left.map(s => RuntimeException(s)).toTry

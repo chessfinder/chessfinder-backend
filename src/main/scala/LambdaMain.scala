@@ -62,10 +62,11 @@ import sttp.tapir.serverless.aws.lambda.zio.AwsZServerOptions
 
 object LambdaMain extends BaseMain with RequestStreamHandler:
 
-  private val handler = 
+  private val handler =
     def options[R] =
       AwsZServerOptions.noEncoding[R](
-        AwsZServerOptions.customiseInterceptors[R]
+        AwsZServerOptions
+          .customiseInterceptors[R]
           .serverLog(serverLogger)
           .options
       )
@@ -73,7 +74,7 @@ object LambdaMain extends BaseMain with RequestStreamHandler:
       EndpointCombiner.many(syncController.rest, asyncController.rest),
       options
     )
-  
+
   def process(input: InputStream, output: OutputStream) =
     handler
       .process[AwsRequest](input, output)

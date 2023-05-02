@@ -61,7 +61,7 @@ object TaskRepo:
           else ZIO.fail(BrokenLogic.TaskProgressOverflown(taskId))
       yield ()
 
-    override def initiate(taskId: TaskId, total: Int): φ[Unit] = 
+    override def initiate(taskId: TaskId, total: Int): φ[Unit] =
       putTaskRecord(TaskRecord(taskId, total))
 
     private def getTaskRecord(taskId: TaskId): φ[TaskRecord] =

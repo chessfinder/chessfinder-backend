@@ -26,7 +26,7 @@ object ChessDotComClientTest extends ZIOSpecDefault with NarrowIntegrationSuite:
   // protected lazy val configLayer =
   //   ZLayer.fromZIO(ZIO.attempt(ConfigFactory.load()))
 
-  protected lazy val `chess.com` = 
+  protected lazy val `chess.com` =
     WireMock.configureFor("localhost", 18443)
     ClientBackdoor("/chess_com")
 
@@ -139,16 +139,16 @@ object ChessDotComClientTest extends ZIOSpecDefault with NarrowIntegrationSuite:
             .expectsEndpoint("GET", "/pub/player/tigran-c-137/games/archives")
             .returnsJson(
               """|
-                  |{
-                  | "archives": [
-                  |  "https://pub/player/tigran-c-137/games/2022/07",
-                  |  "https://pub/player/tigran-c-137/games/2022/08",
-                  |  "https://pub/player/tigran-c-137/games/2022/09",
-                  |  "https://pub/player/tigran-c-137/games/2022/10",
-                  |  "https://pub/player/tigran-c-137/games/2022/11"
-                  |  ]
-                  |}
-                  |""".stripMargin
+                 |{
+                 | "archives": [
+                 |  "https://pub/player/tigran-c-137/games/2022/07",
+                 |  "https://pub/player/tigran-c-137/games/2022/08",
+                 |  "https://pub/player/tigran-c-137/games/2022/09",
+                 |  "https://pub/player/tigran-c-137/games/2022/10",
+                 |  "https://pub/player/tigran-c-137/games/2022/11"
+                 |  ]
+                 |}
+                 |""".stripMargin
             )
             .stub()
 
@@ -183,10 +183,10 @@ object ChessDotComClientTest extends ZIOSpecDefault with NarrowIntegrationSuite:
             .returnsStatusCode(404)
             .returnsJson(
               """|{
-                  |"code": 0,
-                  |"message": "User \"tigran-c-138\" not found."
-                  |}
-                  |""".stripMargin
+                 |"code": 0,
+                 |"message": "User \"tigran-c-138\" not found."
+                 |}
+                 |""".stripMargin
             )
             .stub()
 

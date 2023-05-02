@@ -8,7 +8,7 @@ import scala.concurrent.Future
 import sttp.tapir.json.circe.*
 import sttp.tapir.stringBody
 import sttp.tapir.ztapir.*
-import search.{TaskStatusChecker, GameFinder, GameDownloader}
+import search.{ GameDownloader, GameFinder, TaskStatusChecker }
 import search.entity.*
 import zio.*
 import core.SearchFen
@@ -71,7 +71,7 @@ object AsyncController:
             ApiError.fromBrokenLogic,
             taskId => TaskResponse(taskId.value)
           )
-        
+
       blueprint.`POST /api/version/game`.zServerLogic(logic)
 
     val `GET /api/version/board`: ZServerEndpoint[GameFinder[V], Any] =
@@ -89,13 +89,18 @@ object AsyncController:
       blueprint.`GET /api/version/board`.zServerLogic(logic)
 
     val `GET /api/version/task`: ZServerEndpoint[TaskStatusChecker, Any] =
-      def logic(taskId: UUID): zio.ZIO[TaskStatusChecker, ApiError, TaskStatusResponse] = 
+      def logic(taskId: UUID): zio.ZIO[TaskStatusChecker, ApiError, TaskStatusResponse] =
         TaskStatusChecker.check(TaskId(taskId)).mapError(ApiError.fromBrokenLogic)
       blueprint.`GET /api/version/task`.zServerLogic(logic)
 
     val `GET /api/version`: ZServerEndpoint[GameFinder[V], Any] =
       blueprint.`GET /api/version`.zServerLogic(_ => ZIO.succeed(buildinfo.BuildInfo.toString))
 
-
     def rest =
-      EndpointCombiner(`POST /api/version/game`, EndpointCombiner(`GET /api/version/board`, EndpointCombiner(`GET /api/version/task`, `GET /api/version` :: Nil)))
+      EndpointCombiner(
+        `POST /api/version/game`,
+        EndpointCombiner(
+          `GET /api/version/board`,
+          EndpointCombiner(`GET /api/version/task`, `GET /api/version` :: Nil)
+        )
+      )

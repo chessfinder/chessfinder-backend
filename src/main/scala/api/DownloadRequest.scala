@@ -18,4 +18,3 @@ object DownloadRequest:
   given Schema[DownloadRequest] = Schema.derived[DownloadRequest]
 
   given JsonDecoder[DownloadRequest] = DeriveJsonDecoder.gen[DownloadRequest]
-

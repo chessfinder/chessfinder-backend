@@ -13,7 +13,7 @@ import persistence.config.DynamoDbConfiguration
 object DefaultDynamoDBExecutor:
 
   val layer: ZLayer[HttpClient & AwsConfig, Throwable, DynamoDBExecutor] = {
-    val dynamoDbConfig = 
+    val dynamoDbConfig =
       ZLayer
         .fromZIO(ZIO.config[DynamoDbConfiguration](DynamoDbConfiguration.config))
 
@@ -31,6 +31,6 @@ object DefaultDynamoDBExecutor:
       ZLayer.service[HttpClient] >>> ZLayer.service[AwsConfig] >>> cutomDynamoDbLayer
 
     val dynamoDbExecutorLayer: ZLayer[HttpClient & AwsConfig, Throwable, DynamoDBExecutor] =
-      (dynamoDbLayer ++ ZLayer.succeed(Clock)) >>> DynamoDBExecutor.live // FIXME for what is the clock? 
+      (dynamoDbLayer ++ ZLayer.succeed(Clock)) >>> DynamoDBExecutor.live // FIXME for what is the clock?
     dynamoDbExecutorLayer
   }

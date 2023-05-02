@@ -59,7 +59,7 @@ object GameFinder:
       )
 
   object Impl:
-    def layer[Version <: ApiVersion : Tag] = ZLayer {
+    def layer[Version <: ApiVersion: Tag] = ZLayer {
       for
         validator  <- ZIO.service[BoardValidator]
         downloader <- ZIO.service[GameFetcher[Version]]

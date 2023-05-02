@@ -43,7 +43,6 @@ object FindGameSpec extends ZIOSpecDefault with BroadIntegrationSuite:
   protected lazy val `chess.com` = ClientBackdoor("/chess_com")
   protected lazy val clientLayer = Client.default.orDie
 
-
   private lazy val dynamodbLayer: TaskLayer[DynamoDBExecutor] =
     val in = ((netty.NettyHttpClient.default >+> AwsConfig.default) ++ configLayer)
     in >>> DefaultDynamoDBExecutor.layer
@@ -94,7 +93,11 @@ object FindGameSpec extends ZIOSpecDefault with BroadIntegrationSuite:
             java.nio.charset.StandardCharsets.UTF_8
           )
           for
-            response   <- Client.request(method = Method.POST, url = "http://localhost:8080/api/async/board", content = body)
+            response <- Client.request(
+              method = Method.POST,
+              url = "http://localhost:8080/api/async/board",
+              content = body
+            )
             findResult <- response.body.to[FindResponse]
           yield findResult
 

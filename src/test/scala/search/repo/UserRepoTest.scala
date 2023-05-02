@@ -32,7 +32,6 @@ import io.circe.*
 import chessfinder.util.RandomReadableString
 import chessfinder.search.BrokenLogic
 
-
 object UserRepoTest extends ZIOSpecDefault with NarrowIntegrationSuite:
   // protected lazy val configLayer =
   //   ZLayer.fromZIO(ZIO.attempt(ConfigFactory.load()))

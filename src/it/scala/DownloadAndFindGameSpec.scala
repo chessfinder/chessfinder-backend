@@ -40,16 +40,16 @@ object DownloadAndFindGameSpec extends ZIOSpecDefault with BroadIntegrationSuite
           .expectsEndpoint("GET", s"/pub/player/${userName}/games/archives")
           .returnsJson(
             s"""|
-               |{
-               | "archives": [
-               |  "https://example.com/pub/player/${userName}/games/2022/07",
-               |  "https://example.com/pub/player/${userName}/games/2022/08",
-               |  "https://example.com/pub/player/${userName}/games/2022/09",
-               |  "https://example.com/pub/player/${userName}/games/2022/10",
-               |  "https://example.com/pub/player/${userName}/games/2022/11"
-               |  ]
-               |}
-               |""".stripMargin
+                |{
+                | "archives": [
+                |  "https://example.com/pub/player/${userName}/games/2022/07",
+                |  "https://example.com/pub/player/${userName}/games/2022/08",
+                |  "https://example.com/pub/player/${userName}/games/2022/09",
+                |  "https://example.com/pub/player/${userName}/games/2022/10",
+                |  "https://example.com/pub/player/${userName}/games/2022/11"
+                |  ]
+                |}
+                |""".stripMargin
           )
           .stub()
 
@@ -86,11 +86,11 @@ object DownloadAndFindGameSpec extends ZIOSpecDefault with BroadIntegrationSuite
         val actualResult =
           val body = Body.fromString(
             s"""|{
-               |  "user":"${userName}",
-               |  "platform":"chess.com",
-               |  "board":"????R?r?/?????kq?/????Q???/????????/????????/????????/????????/????????"
-               |}
-               |""".stripMargin,
+                |  "user":"${userName}",
+                |  "platform":"chess.com",
+                |  "board":"????R?r?/?????kq?/????Q???/????????/????????/????????/????????/????????"
+                |}
+                |""".stripMargin,
             java.nio.charset.StandardCharsets.UTF_8
           )
           for
@@ -128,16 +128,16 @@ object DownloadAndFindGameSpec extends ZIOSpecDefault with BroadIntegrationSuite
           .expectsEndpoint("GET", s"/pub/player/${userName}/games/archives")
           .returnsJson(
             s"""|
-               |{
-               | "archives": [
-               |  "https://example.com/pub/player/${userName}/games/2022/07",
-               |  "https://example.com/pub/player/${userName}/games/2022/08",
-               |  "https://example.com/pub/player/${userName}/games/2022/09",
-               |  "https://example.com/pub/player/${userName}/games/2022/10",
-               |  "https://example.com/pub/player/${userName}/games/2022/11"
-               |  ]
-               |}
-               |""".stripMargin
+                |{
+                | "archives": [
+                |  "https://example.com/pub/player/${userName}/games/2022/07",
+                |  "https://example.com/pub/player/${userName}/games/2022/08",
+                |  "https://example.com/pub/player/${userName}/games/2022/09",
+                |  "https://example.com/pub/player/${userName}/games/2022/10",
+                |  "https://example.com/pub/player/${userName}/games/2022/11"
+                |  ]
+                |}
+                |""".stripMargin
           )
           .stub()
 
@@ -182,11 +182,11 @@ object DownloadAndFindGameSpec extends ZIOSpecDefault with BroadIntegrationSuite
         val actualResult =
           val body = Body.fromString(
             s"""|{
-               |  "user":"${userName}",
-               |  "platform":"chess.com",
-               |  "board":"????R?r?/?????kq?/????Q???/????????/????????/????????/????????/????????"
-               |}
-               |""".stripMargin,
+                |  "user":"${userName}",
+                |  "platform":"chess.com",
+                |  "board":"????R?r?/?????kq?/????Q???/????????/????????/????????/????????/????????"
+                |}
+                |""".stripMargin,
             java.nio.charset.StandardCharsets.UTF_8
           )
           for

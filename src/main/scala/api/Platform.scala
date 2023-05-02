@@ -8,7 +8,6 @@ import search.entity.ChessPlatform
 import scala.util.Try
 import zio.json.{ DeriveJsonDecoder, JsonDecoder }
 
-
 enum Platform:
   case `chess.com`
 

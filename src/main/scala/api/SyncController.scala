@@ -36,7 +36,7 @@ object SyncController:
   type V = ApiVersion.Newborn.type
 
   class Impl(blueprint: SyncController) extends ZTapir:
-    
+
     val `GET /api/version/game`: ZServerEndpoint[GameFinder[V], Any] =
       def logic(request: FindRequest) =
         val board                   = SearchFen(request.board)

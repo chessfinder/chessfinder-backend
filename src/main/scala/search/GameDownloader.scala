@@ -40,24 +40,29 @@ object GameDownloader:
   def download(user: UserIdentified, archives: Archives, taskId: TaskId): ψ[GameDownloader, Unit] =
     ZIO.serviceWithZIO[GameDownloader](_.download(user, archives, taskId))
 
-  class Impl(client: ChessDotComClient, userRepo: UserRepo, taskRepo: TaskRepo, gameRepo: GameRepo, random: Random)
-      extends GameDownloader:
+  class Impl(
+      client: ChessDotComClient,
+      userRepo: UserRepo,
+      taskRepo: TaskRepo,
+      gameRepo: GameRepo,
+      random: Random
+  ) extends GameDownloader:
 
-    def download(user: UserIdentified, archives: Archives, taskId: TaskId): φ[Unit] = 
-      
+    def download(user: UserIdentified, archives: Archives, taskId: TaskId): φ[Unit] =
+
       @tailrec def rec(result: φ[DownloadingResult], archives: List[Uri]): φ[DownloadingResult] =
         archives match
           case resource :: tail =>
-            val downloadingAndSavingGames = 
+            val downloadingAndSavingGames =
               for
                 games <- client.games(resource).mapError(_ => ServiceOverloaded)
                 gameRecords = games.games.map(game => HistoricalGame(game.url, PgnStr(game.pgn)))
                 _ <- gameRepo.save(user.userId, gameRecords)
               yield ()
-              
-            val processFailure = 
-              for 
-                _ <- taskRepo.failureIncrement(taskId)
+
+            val processFailure =
+              for
+                _   <- taskRepo.failureIncrement(taskId)
                 res <- result
               yield DownloadingResult(resource +: res.failedArchives)
             val processSuccess = taskRepo.successIncrement(taskId) *> result
@@ -68,16 +73,15 @@ object GameDownloader:
 
       rec(φ.succeed(DownloadingResult.empty), archives.archives.toList.reverse).unit
 
-    
-    def cache(user: User): φ[TaskId] = 
-      val gettingProfile =  client
+    def cache(user: User): φ[TaskId] =
+      val gettingProfile = client
         .profile(user.userName)
         .mapError {
           case ClientError.ProfileNotFound(userName) => BrokenLogic.ProfileNotFound(user)
           case _                                     => BrokenLogic.ServiceOverloaded
         }
         .map(profile => user.identified(UserId(profile.`@id`.toString)))
-      
+
       val gettingArchives = client
         .archives(user.userName)
         .mapError {
@@ -88,22 +92,21 @@ object GameDownloader:
 
       for
         userIdentified <- gettingProfile
-        _ <- userRepo.save(userIdentified)
-        archives <- gettingArchives
-        taskId <- random.nextUUID.map(uuid => TaskId(uuid))
-        _ <- taskRepo.initiate(taskId, archives.archives.length)
-        _ <- download(userIdentified, archives, taskId).forkDaemon
+        _              <- userRepo.save(userIdentified)
+        archives       <- gettingArchives
+        taskId         <- random.nextUUID.map(uuid => TaskId(uuid))
+        _              <- taskRepo.initiate(taskId, archives.archives.length)
+        _              <- download(userIdentified, archives, taskId).forkDaemon
       yield taskId
-        
 
   @Deprecated
   object Impl:
     val layer = ZLayer {
-      for 
-        client <- ZIO.service[ChessDotComClient]
+      for
+        client   <- ZIO.service[ChessDotComClient]
         userRepo <- ZIO.service[UserRepo]
         taskRepo <- ZIO.service[TaskRepo]
         gameRepo <- ZIO.service[GameRepo]
-        random <- ZIO.service[Random]
+        random   <- ZIO.service[Random]
       yield Impl(client, userRepo, taskRepo, gameRepo, random)
     }

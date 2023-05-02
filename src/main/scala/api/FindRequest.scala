@@ -19,4 +19,3 @@ object FindRequest:
   given Schema[FindRequest] = Schema.derived[FindRequest]
 
   given JsonDecoder[FindRequest] = DeriveJsonDecoder.gen[FindRequest]
-

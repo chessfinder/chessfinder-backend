@@ -33,17 +33,17 @@ object TaskStatusChecker:
 
   import zio.logging.fileAsyncJsonLogger
 
-  def check(taskId: TaskId): ψ[TaskStatusChecker, TaskStatusResponse] = 
-    ZIO.serviceWithZIO[TaskStatusChecker](_.check(taskId)) @@ Span.log("TaskStatusChecker") @@ ZIOAspect.annotated("user", "muser")
+  def check(taskId: TaskId): ψ[TaskStatusChecker, TaskStatusResponse] =
+    ZIO.serviceWithZIO[TaskStatusChecker](_.check(taskId)) @@ Span.log("TaskStatusChecker") @@ ZIOAspect
+      .annotated("user", "muser")
 
   class Impl(taskRepo: TaskRepo) extends TaskStatusChecker:
 
-    def check(taskId: TaskId): φ[TaskStatusResponse] = 
-      taskRepo.get(taskId).mapError{
+    def check(taskId: TaskId): φ[TaskStatusResponse] =
+      taskRepo.get(taskId).mapError {
         case err: BrokenLogic.TaskNotFound => err
-        case _ => BrokenLogic.ServiceOverloaded
+        case _                             => BrokenLogic.ServiceOverloaded
       }
-
 
   object Impl:
     val layer = ZLayer {

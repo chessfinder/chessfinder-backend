@@ -18,7 +18,7 @@ import util.ConfigExtension.*
 
 class ChessDotComClientConfigurationTest extends ZSuite:
   testZ("Profile should be parsed correctly") {
-    val confAsString = 
+    val confAsString =
       """|{
          |  "client": {
          |    "chesscom": {
@@ -28,13 +28,12 @@ class ChessDotComClientConfigurationTest extends ZSuite:
          |}
       """.stripMargin
 
-    val conf = TypesafeConfigProvider.fromHoconString(confAsString)
+    val conf           = TypesafeConfigProvider.fromHoconString(confAsString)
     val expectedResult = ChessDotComClient.Impl.Configuration(uri"www.example.com/chess")
-    val configLoaded = 
+    val configLoaded =
       conf.loadTo[ChessDotComClient.Impl.Configuration]
-    
-    for
-      actualResult <- configLoaded  
+
+    for actualResult <- configLoaded
     yield assertEquals(expectedResult, actualResult)
-    
+
   }

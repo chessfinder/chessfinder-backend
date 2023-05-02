@@ -12,7 +12,7 @@ import zio.json.*
 import java.util.UUID
 
 case class TaskResponse(
-  taskId: UUID
+    taskId: UUID
 )
 
 object TaskResponse:

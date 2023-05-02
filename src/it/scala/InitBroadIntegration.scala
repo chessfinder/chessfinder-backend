@@ -19,7 +19,7 @@ import zio.config.typesafe.TypesafeConfigProvider
 
 object InitBroadIntegrationEnv:
 
-  val runtime = Runtime.default
+  val runtime     = Runtime.default
   val configLayer = Runtime.setConfigProvider(TypesafeConfigProvider.fromResourcePath())
 
   lazy val run =

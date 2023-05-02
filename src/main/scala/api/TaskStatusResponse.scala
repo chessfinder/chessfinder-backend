@@ -23,15 +23,15 @@ final case class TaskStatusResponse(
 object TaskStatusResponse:
 
   def apply(
-    task: TaskRecord
-  ): TaskStatusResponse = 
+      task: TaskRecord
+  ): TaskStatusResponse =
     TaskStatusResponse(
       taskId = task.task_id.value,
       failed = task.failed,
       succeed = task.succeed,
       done = task.done,
       pending = task.pending,
-      total = task.total        
+      total = task.total
     )
 
   given Codec[TaskStatusResponse]  = deriveCodec[TaskStatusResponse]

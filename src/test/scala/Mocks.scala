@@ -51,7 +51,7 @@ trait Mocks:
         yield new GameFetcher:
           override def fetch(user: User): φ[FetchingResult] = proxy(Fetch, user)
       }
-  
+
   object NewbornGameFetcherMock extends Mock[GameFetcher[ApiVersion.Newborn.type]]:
     object Fetch extends Effect[User, BrokenLogic, FetchingResult]
 
@@ -141,8 +141,8 @@ trait Mocks:
 
           override def successIncrement(taskId: TaskId): φ[Unit] =
             proxy(SuccessIncrement, taskId)
-      
-          override def failureIncrement(taskId: TaskId): φ[Unit] = 
+
+          override def failureIncrement(taskId: TaskId): φ[Unit] =
             proxy(FailureIncrement, taskId)
 
       }

@@ -20,7 +20,7 @@ object DownloadAndFindResponse:
   given Codec[DownloadAndFindResponse]  = deriveCodec[DownloadAndFindResponse]
   given Schema[DownloadAndFindResponse] = Schema.derived[DownloadAndFindResponse]
 
-  given JsonEncoder[Uri]          = JsonEncoder[String].contramap(_.toString)
+  given JsonEncoder[Uri]                     = JsonEncoder[String].contramap(_.toString)
   given JsonEncoder[DownloadAndFindResponse] = DeriveJsonEncoder.gen[DownloadAndFindResponse]
 
   def fromSearchResult(result: SearchResult): DownloadAndFindResponse =

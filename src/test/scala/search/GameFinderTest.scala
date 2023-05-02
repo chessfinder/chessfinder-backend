@@ -30,7 +30,12 @@ object GameFinderTest extends ZIOSpecDefault with Mocks:
 
       val actualResult = GameFinder
         .find[ApiVersion.Async.type](board, platform, userName)
-        .provide(boardValidatorLayer, SearcherMock.empty, AsyncGameFetcherMock.empty, GameFinder.Impl.layer[ApiVersion.Async.type])
+        .provide(
+          boardValidatorLayer,
+          SearcherMock.empty,
+          AsyncGameFetcherMock.empty,
+          GameFinder.Impl.layer[ApiVersion.Async.type]
+        )
 
       assertZIO(actualResult.exit)(Assertion.fails(Assertion.equalTo(InvalidSearchBoard)))
 
@@ -58,7 +63,12 @@ object GameFinderTest extends ZIOSpecDefault with Mocks:
 
       val actualResult = GameFinder
         .find[ApiVersion.Async.type](board, platform, userName)
-        .provide(boardValidatorLayer, SearcherMock.empty, gameDownloaderLayer, GameFinder.Impl.layer[ApiVersion.Async.type])
+        .provide(
+          boardValidatorLayer,
+          SearcherMock.empty,
+          gameDownloaderLayer,
+          GameFinder.Impl.layer[ApiVersion.Async.type]
+        )
 
       assertZIO(actualResult.exit)(Assertion.fails(Assertion.equalTo(ProfileNotFound(user))))
 
@@ -86,7 +96,12 @@ object GameFinderTest extends ZIOSpecDefault with Mocks:
 
       val actualResult = GameFinder
         .find[ApiVersion.Async.type](board, platform, userName)
-        .provide(boardValidatorLayer, SearcherMock.empty, gameDownloaderLayer, GameFinder.Impl.layer[ApiVersion.Async.type])
+        .provide(
+          boardValidatorLayer,
+          SearcherMock.empty,
+          gameDownloaderLayer,
+          GameFinder.Impl.layer[ApiVersion.Async.type]
+        )
 
       assertZIO(actualResult.exit)(Assertion.fails(Assertion.equalTo(NoGameAvaliable(user))))
     },
@@ -150,7 +165,12 @@ object GameFinderTest extends ZIOSpecDefault with Mocks:
 
       val actualResult = GameFinder
         .find[ApiVersion.Async.type](board, platform, userName)
-        .provide(boardValidatorLayer, searcherLayer, gameDownloaderLayer, GameFinder.Impl.layer[ApiVersion.Async.type])
+        .provide(
+          boardValidatorLayer,
+          searcherLayer,
+          gameDownloaderLayer,
+          GameFinder.Impl.layer[ApiVersion.Async.type]
+        )
 
       assertZIO(actualResult)(Assertion.equalTo(expectedResult))
     },
@@ -213,7 +233,12 @@ object GameFinderTest extends ZIOSpecDefault with Mocks:
 
       val actualResult = GameFinder
         .find[ApiVersion.Async.type](board, platform, userName)
-        .provide(boardValidatorLayer, searcherLayer, gameDownloaderLayer, GameFinder.Impl.layer[ApiVersion.Async.type])
+        .provide(
+          boardValidatorLayer,
+          searcherLayer,
+          gameDownloaderLayer,
+          GameFinder.Impl.layer[ApiVersion.Async.type]
+        )
 
       assertZIO(actualResult)(Assertion.equalTo(expectedResult))
     },
@@ -271,7 +296,12 @@ object GameFinderTest extends ZIOSpecDefault with Mocks:
 
       val actualResult = GameFinder
         .find[ApiVersion.Async.type](board, platform, userName)
-        .provide(boardValidatorLayer, searcherLayer, gameDownloaderLayer, GameFinder.Impl.layer[ApiVersion.Async.type])
+        .provide(
+          boardValidatorLayer,
+          searcherLayer,
+          gameDownloaderLayer,
+          GameFinder.Impl.layer[ApiVersion.Async.type]
+        )
 
       assertZIO(actualResult)(Assertion.equalTo(expectedResult))
 

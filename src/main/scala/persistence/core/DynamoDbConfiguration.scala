@@ -10,13 +10,13 @@ import zio.config.*
 import zio.config.magnolia.deriveConfig
 
 case class DynamoDbConfiguration(
-  region: String,
-  uri: String
+    region: String,
+    uri: String
 ):
-  val uriValidated: URI = URI.create(uri)
+  val uriValidated: URI       = URI.create(uri)
   val regionValidated: Region = Region.of(region)
 
 object DynamoDbConfiguration:
   given Decoder[DynamoDbConfiguration] = deriveDecoder[DynamoDbConfiguration]
-  given config: Config[DynamoDbConfiguration] = deriveConfig[DynamoDbConfiguration].nested("database-dynamodb-config")
-
+  given config: Config[DynamoDbConfiguration] =
+    deriveConfig[DynamoDbConfiguration].nested("database-dynamodb-config")

@@ -2,7 +2,7 @@ package chessfinder
 package persistence
 
 import persistence.core.DynamoTable
-import zio.schema.{DeriveSchema, Schema}
+import zio.schema.{ DeriveSchema, Schema }
 import java.time.Instant
 import persistence.core.DynamoTypeMappers
 import chessfinder.search.entity.*
@@ -13,12 +13,12 @@ import chess.format.pgn.PgnStr
 import zio.schema.annotation.recordName
 
 case class GameRecord(
-  user_id: UserId,
-  game_id: GameId,
-  resource: Uri,
-  pgn: PgnStr
+    user_id: UserId,
+    game_id: GameId,
+    resource: Uri,
+    pgn: PgnStr
 ):
-  
+
   def toGame: HistoricalGame = HistoricalGame(resource, pgn)
 
 object GameRecord:
@@ -34,9 +34,9 @@ object GameRecord:
         sortKeyName = "game_id"
       )
 
-  def fromGame(userId: UserId, game: HistoricalGame): GameRecord = 
+  def fromGame(userId: UserId, game: HistoricalGame): GameRecord =
     GameRecord(
-      userId, 
+      userId,
       GameId(game.resource.toString),
       game.resource,
       game.pgn

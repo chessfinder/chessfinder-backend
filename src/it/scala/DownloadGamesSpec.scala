@@ -44,7 +44,6 @@ object DownloadGamesSpec extends ZIOSpecDefault with BroadIntegrationSuite:
 
   protected lazy val `chess.com` = ClientBackdoor("/chess_com")
   protected lazy val clientLayer = Client.default.orDie
- 
 
   private lazy val dynamodbLayer: TaskLayer[DynamoDBExecutor] =
     val in = ((netty.NettyHttpClient.default >+> AwsConfig.default) ++ configLayer)
@@ -110,7 +109,11 @@ object DownloadGamesSpec extends ZIOSpecDefault with BroadIntegrationSuite:
             java.nio.charset.StandardCharsets.UTF_8
           )
           for
-            res  <- Client.request(method = Method.POST, url = "http://localhost:8080/api/async/game", content = body)
+            res <- Client.request(
+              method = Method.POST,
+              url = "http://localhost:8080/api/async/game",
+              content = body
+            )
             task <- res.body.to[TaskResponse]
           yield task
 
@@ -120,7 +123,7 @@ object DownloadGamesSpec extends ZIOSpecDefault with BroadIntegrationSuite:
               s"http://localhost:8080/api/async/task?taskId=${taskResponse.taskId.toString()}"
             )
             status <- response.body.to[TaskStatusResponse]
-            // _      <- ZIO.sleep(ZDuration.fromScala(1.seconds))
+          // _      <- ZIO.sleep(ZDuration.fromScala(1.seconds))
           yield status
 
         def makeExpectedTaskStatus(actualResult: TaskStatusResponse) =
@@ -147,19 +150,19 @@ object DownloadGamesSpec extends ZIOSpecDefault with BroadIntegrationSuite:
         val expectedAmountOfGames = 9
 
         for
-          _ <- Console.printLine("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
-          _ <- Console.printLine("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
-          _ <- Console.printLine("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
-          _ <- Console.printLine("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
-          _ <- Console.printLine("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
-          _ <- Console.printLine("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
-          _ <- Console.printLine("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
-          _ <- Console.printLine("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
-          _ <- Console.printLine("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
-          _ <- Console.printLine("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
-          _ <- Console.printLine("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
-          _ <- Console.printLine("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
-          _ <- Console.printLine("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
+          _                <- Console.printLine("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
+          _                <- Console.printLine("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
+          _                <- Console.printLine("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
+          _                <- Console.printLine("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
+          _                <- Console.printLine("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
+          _                <- Console.printLine("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
+          _                <- Console.printLine("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
+          _                <- Console.printLine("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
+          _                <- Console.printLine("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
+          _                <- Console.printLine("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
+          _                <- Console.printLine("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
+          _                <- Console.printLine("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
+          _                <- Console.printLine("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
           _                <- userStub
           _                <- archivesStub
           _                <- `2022-07`

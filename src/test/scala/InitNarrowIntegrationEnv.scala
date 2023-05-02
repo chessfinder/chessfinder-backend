@@ -20,10 +20,9 @@ import com.typesafe.config.{ Config, ConfigFactory }
 import zio.Runtime
 import zio.config.typesafe.TypesafeConfigProvider
 
-
 object InitNarrowIntegrationEnv:
 
-  val runtime = zio.Runtime.default
+  val runtime     = zio.Runtime.default
   val configLayer = Runtime.setConfigProvider(TypesafeConfigProvider.fromResourcePath())
 
   lazy val run =
@@ -37,8 +36,8 @@ object InitNarrowIntegrationEnv:
     WireMock.removeAllMappings()
 
   def setupDynamoDb() =
-    val dynamodbLayer: TaskLayer[DynamoDBExecutor] = 
-      val in = ((netty.NettyHttpClient.default >+> AwsConfig.default)) 
+    val dynamodbLayer: TaskLayer[DynamoDBExecutor] =
+      val in = ((netty.NettyHttpClient.default >+> AwsConfig.default))
       in >>> DefaultDynamoDBExecutor.layer
 
     Try {

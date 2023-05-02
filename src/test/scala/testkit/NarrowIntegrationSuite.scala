@@ -9,4 +9,3 @@ trait NarrowIntegrationSuite:
 
   InitNarrowIntegrationEnv.run
   val configLayer = InitNarrowIntegrationEnv.configLayer
-  
