@@ -29,7 +29,6 @@ import zio.aws.netty
 import zio.aws.core.config.AwsConfig
 import persistence.core.DefaultDynamoDBExecutor
 import zio.dynamodb.*
-import zio.logging.backend.SLF4J
 import util.EndpointCombiner
 import chessfinder.search.TaskStatusChecker
 import chessfinder.persistence.GameRecord
@@ -38,23 +37,7 @@ import sttp.tapir.server.ziohttp.*
 import zio.logging.*
 import zio.config.typesafe.TypesafeConfigProvider
 
-object Main extends ZIOAppDefault:
-
-  val organization = "eudemonia"
-
-  private val configLayer = Runtime.setConfigProvider(TypesafeConfigProvider.fromResourcePath())
-  // private val loggingLayer = Runtime.removeDefaultLoggers >>> SLF4J.slf4j
-  private val loggingLayer = Runtime.removeDefaultLoggers >>> zio.logging.consoleJsonLogger()
-
-  val syncControllerBlueprint = SyncController("newborn")
-  val syncController          = SyncController.Impl(syncControllerBlueprint)
-
-  val asyncControllerBlueprint = AsyncController("async")
-  val asyncController          = AsyncController.Impl(asyncControllerBlueprint)
-
-  private val dynamodbLayer: TaskLayer[DynamoDBExecutor] =
-    val in = ((netty.NettyHttpClient.default >+> AwsConfig.default) ++ configLayer)
-    in >>> DefaultDynamoDBExecutor.layer
+object Main extends BaseMain with ZIOAppDefault:
 
   private val servers: List[OAServer] = List(
     OAServer("http://localhost:8080").description("Chessfinder APIs")
@@ -71,20 +54,7 @@ object Main extends ZIOAppDefault:
   private val zioInterpreter =
     ZioHttpInterpreter[Any](
       ZioHttpServerOptions.customiseInterceptors
-        .serverLog(
-          ZioHttpServerOptions.defaultServerLog
-            .copy(
-              doLogWhenReceived = msg => ZIO.logInfo(msg),
-              doLogWhenHandled = (msg: String, exOpt: Option[Throwable]) =>
-                ZIO.logInfoCause(msg, exOpt.map(e => Cause.fail(e)).getOrElse(Cause.empty)),
-              doLogAllDecodeFailures = (msg: String, exOpt: Option[Throwable]) =>
-                ZIO.logInfoCause(msg, exOpt.map(e => Cause.fail(e)).getOrElse(Cause.empty)),
-              doLogExceptions = (msg: String, ex: Throwable) => ZIO.logErrorCause(msg, Cause.fail(ex)),
-              noLog = ZIO.unit,
-              logWhenReceived = true,
-              logAllDecodeFailures = true
-            )
-        )
+        .serverLog(serverLogger)
         .options
     )
 
@@ -104,8 +74,6 @@ object Main extends ZIOAppDefault:
 
   val app =
     zioInterpreter.toHttp(endpoints).withDefaultErrorResponse
-
-  private lazy val clientLayer = Client.default.orDie
 
   override val bootstrap = configLayer >+> loggingLayer
 

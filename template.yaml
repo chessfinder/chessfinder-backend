@@ -5,7 +5,7 @@ Description: >
 
 Resources:
   Roles:
-    Type: AWS::IAM::Role
+    Type: AWS::Serverless::Application
     Properties:
       Location: .infrastructure/role.yaml
 
@@ -19,9 +19,13 @@ Resources:
     Properties:
       Location: .infrastructure/api.yaml
       Parameters:
-        LambdaRoleArn: !Roles Roles.Outputs.RoleForChessfinderLambdaArn
+        LambdaRoleArn: !GetAtt Roles.Outputs.RoleForChessfinderLambdaArn
 
 Outputs:
   OrderApiEndpoint:
     Description: "Chessfinder API Gateway Endpoint URL"
     Value: !GetAtt Api.Outputs.ChessfinderUrl
+
+  RoleForChessfinderLambdaArn:
+    Description: "Chessfinder Lambda Role"
+    Value: !GetAtt Roles.Outputs.RoleForChessfinderLambdaArn

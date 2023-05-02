@@ -58,30 +58,21 @@ import persistence.core.DefaultDynamoDBExecutor
 import zio.dynamodb.*
 import util.EndpointCombiner
 import zio.config.typesafe.TypesafeConfigProvider
+import sttp.tapir.serverless.aws.lambda.zio.AwsZServerOptions
 
-object LambdaMain extends RequestStreamHandler:
+object LambdaMain extends BaseMain with RequestStreamHandler:
 
-  val organization = "eudemonia"
-
-  val syncController  = SyncController.Impl(SyncController("newborn"))
-  val asyncController = AsyncController.Impl(AsyncController("async"))
-
-  type AllGameFinders = GameFinder[ApiVersion.Newborn.type] & GameFinder[ApiVersion.Async.type]
-  val handler = ZLambdaHandler.withMonadError(
-    EndpointCombiner.many(syncController.rest, asyncController.rest)
-  )
-
-  private val loggingLayer = Runtime.removeDefaultLoggers >>> SLF4J.slf4j
-
-  private val configLayer = Runtime.setConfigProvider(TypesafeConfigProvider.fromResourcePath())
-
-  private val dynamodbLayer: TaskLayer[DynamoDBExecutor] =
-    val in = ((netty.NettyHttpClient.default >+> AwsConfig.default))
-    in >>> DefaultDynamoDBExecutor.layer
-
-  private lazy val clientLayer =
-    Client.default.map(z => z.update(_ @@ ZLoggingAspect())).orDie
-
+  private val handler = 
+    def options[R] =
+      AwsZServerOptions.noEncoding[R](
+        AwsZServerOptions.customiseInterceptors[R]
+          .serverLog(serverLogger)
+          .options
+      )
+    ZLambdaHandler.withMonadError(
+      EndpointCombiner.many(syncController.rest, asyncController.rest),
+      options
+    )
   
   def process(input: InputStream, output: OutputStream) =
     handler
@@ -107,7 +98,7 @@ object LambdaMain extends RequestStreamHandler:
       )
 
   override def handleRequest(input: InputStream, output: OutputStream, context: Context): Unit =
-    val runtime = Runtime.default
     Unsafe.unsafe { implicit unsafe =>
+      val runtime = Runtime.unsafe.fromLayer(configLayer >+> loggingLayer)
       runtime.unsafe.run(process(input, output)).getOrThrowFiberFailure()
     }
