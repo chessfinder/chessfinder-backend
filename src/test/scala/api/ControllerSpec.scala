@@ -43,7 +43,6 @@ import zio.*
 import zio.http.*
 import chessfinder.api.SyncController
 import chessfinder.search.GameFinder
-import zio.Console.ConsoleLive
 import sttp.apispec.openapi.Server as OAServer
 import sttp.tapir.docs.openapi.OpenAPIDocsInterpreter
 import sttp.tapir.swagger.*

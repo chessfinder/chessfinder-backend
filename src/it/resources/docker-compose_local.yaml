@@ -1,15 +1,6 @@
 version: '3.9'
 
 services:
-  
-#  wiremock:
-#    image: wiremock/wiremock:latest
-#    container_name: wiremock
-#    restart: "no"
-#    hostname: wiremock
-#    ports:
-#      - "${WIREMOCK_EXPOSED_PORT}:8443"
-#    command: ["--port", "8443"]
 
   wiremock-gui:
     image: "holomekc/wiremock-gui:latest"

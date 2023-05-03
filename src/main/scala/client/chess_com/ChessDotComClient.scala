@@ -105,7 +105,6 @@ object ChessDotComClient:
     val layer = ZLayer.apply {
       for
         clientConfig <- ZIO.config[Configuration](Configuration.config)
-        _            <- zio.Console.printLine(clientConfig)
         client       <- ZIO.service[Client]
       yield Impl(clientConfig, client)
     }

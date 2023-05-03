@@ -9,7 +9,6 @@ import zio.http.{ HttpApp, Request, Response }
 import zio.*
 import zio.http.{ App as _, * }
 import chessfinder.search.GameFinder
-import zio.Console.ConsoleLive
 import sttp.apispec.openapi.Server as OAServer
 import sttp.tapir.docs.openapi.OpenAPIDocsInterpreter
 import sttp.tapir.swagger.*
