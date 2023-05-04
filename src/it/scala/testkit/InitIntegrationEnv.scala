@@ -29,6 +29,7 @@ open class InitIntegrationEnv:
 
   def run =
     println("Envs with AWS")
+    println("Envs with AWS")
     println(sys.env.keys.filter(_.toUpperCase.contains("AWS")))
     import scala.jdk.CollectionConverters.*
     System.setProperty("aws.accessKeyId", "aKey")
