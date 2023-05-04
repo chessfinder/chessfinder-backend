@@ -20,6 +20,7 @@ import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider
 import com.typesafe.config.{ Config, ConfigFactory }
 import zio.Runtime
 import zio.config.typesafe.TypesafeConfigProvider
+import zio.Cause
 
 open class InitIntegrationEnv:
 
@@ -53,9 +54,9 @@ open class InitIntegrationEnv:
       val io: IO[Throwable, Unit] =
         val dependentIo =
           for
-            _ <- createSortedSetTableWithSingleKey(UserRecord.Table).catchNonFatalOrDie(_ => ZIO.unit)
-            _ <- createSortedSetTableWithSingleKey(GameRecord.Table).catchNonFatalOrDie(_ => ZIO.unit)
-            _ <- createUniqueTableWithSingleKey(TaskRecord.Table).catchNonFatalOrDie(_ => ZIO.unit)
+            _ <- createSortedSetTableWithSingleKey(UserRecord.Table).catchNonFatalOrDie(e => ZIO.logErrorCause(e.getMessage, Cause.fail(e)))
+            _ <- createSortedSetTableWithSingleKey(GameRecord.Table).catchNonFatalOrDie(e => ZIO.logErrorCause(e.getMessage, Cause.fail(e)))
+            _ <- createUniqueTableWithSingleKey(TaskRecord.Table).catchNonFatalOrDie(e => ZIO.logErrorCause(e.getMessage, Cause.fail(e)))
           yield ()
         dependentIo.provide(dynamodbLayer)
 

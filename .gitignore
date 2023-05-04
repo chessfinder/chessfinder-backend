@@ -13,5 +13,6 @@ target
 .bloop/
 .metals/
 .vscode/
+hole/
 # .infrastructure/api.yaml
 
