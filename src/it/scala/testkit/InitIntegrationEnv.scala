@@ -54,9 +54,15 @@ open class InitIntegrationEnv:
       val io: IO[Throwable, Unit] =
         val dependentIo =
           for
-            _ <- createSortedSetTableWithSingleKey(UserRecord.Table).catchNonFatalOrDie(e => ZIO.logErrorCause(e.getMessage, Cause.fail(e)))
-            _ <- createSortedSetTableWithSingleKey(GameRecord.Table).catchNonFatalOrDie(e => ZIO.logErrorCause(e.getMessage, Cause.fail(e)))
-            _ <- createUniqueTableWithSingleKey(TaskRecord.Table).catchNonFatalOrDie(e => ZIO.logErrorCause(e.getMessage, Cause.fail(e)))
+            _ <- createSortedSetTableWithSingleKey(UserRecord.Table).catchNonFatalOrDie(e =>
+              ZIO.logErrorCause(e.getMessage, Cause.fail(e))
+            )
+            _ <- createSortedSetTableWithSingleKey(GameRecord.Table).catchNonFatalOrDie(e =>
+              ZIO.logErrorCause(e.getMessage, Cause.fail(e))
+            )
+            _ <- createUniqueTableWithSingleKey(TaskRecord.Table).catchNonFatalOrDie(e =>
+              ZIO.logErrorCause(e.getMessage, Cause.fail(e))
+            )
           yield ()
         dependentIo.provide(dynamodbLayer)
 
