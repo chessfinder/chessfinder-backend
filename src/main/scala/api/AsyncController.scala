@@ -17,6 +17,7 @@ import java.util.UUID
 import api.ApiVersion
 import util.EndpointCombiner
 import aspect.Span
+import chessfinder.BuildInfo
 
 class AsyncController(val version: String) extends ZTapir:
 
@@ -95,9 +96,7 @@ object AsyncController:
       blueprint.`GET /api/version/task`.zServerLogic(logic)
 
     val `GET /api/version`: ZServerEndpoint[GameFinder[V], Any] =
-      blueprint.`GET /api/version`.zServerLogic(_ =>
-        ZIO.succeed(buildinfo.BuildInfo.toString) @@ Span.log("VersionChecker")
-      )
+      blueprint.`GET /api/version`.zServerLogic(_ => ZIO.succeed(BuildInfo.toString) @@ Span.log)
 
     def rest =
       EndpointCombiner(
