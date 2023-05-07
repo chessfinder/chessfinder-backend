@@ -78,6 +78,10 @@ object ZLambdaHandler:
     
     ZLambdaHandler(endpoints, options)
 
+  def withMonadError[Env](endpoints: List[ZServerEndpoint[Env, Any]]): ZLambdaHandler[Env] =
+    given RIOMonadError[Env] = RIOMonadError[Env]
+    ZLambdaHandler.default(endpoints)
+
   def withMonadError[Env](endpoints: List[ZServerEndpoint[Env, Any]], options: AwsServerOptions[RIO[Env, *]]): ZLambdaHandler[Env] =
     given RIOMonadError[Env] = RIOMonadError[Env]
     ZLambdaHandler(endpoints, options)
