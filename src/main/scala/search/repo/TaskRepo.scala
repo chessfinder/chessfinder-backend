@@ -45,7 +45,7 @@ object TaskRepo:
       getTaskRecord(taskId).map(_.toStatus)
 
     override def successIncrement(taskId: TaskId): φ[Unit] =
-      val eff = 
+      val eff =
         for
           task <- getTaskRecord(taskId)
           _ <-
@@ -56,7 +56,7 @@ object TaskRepo:
       eff @@ Span.log
 
     override def failureIncrement(taskId: TaskId): φ[Unit] =
-      val eff = 
+      val eff =
         for
           task <- getTaskRecord(taskId)
           _ <-

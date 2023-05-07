@@ -21,13 +21,16 @@ object GameRepo:
     ψ.serviceWithZIO[GameRepo](_.list(user)) @@ Span.log
 
   def save(userId: UserId, games: Seq[HistoricalGame]): ψ[GameRepo, Unit] =
-    val eff = 
+    val eff =
       for
-        _ <- ZIO.logInfo(s"Saving ${games.length} into table ...")
+        _   <- ZIO.logInfo(s"Saving ${games.length} into table ...")
         res <- ψ.serviceWithZIO[GameRepo](_.save(userId, games))
       yield res
 
-    val effLogged = eff.tapBoth(e => ZIO.logErrorCause(s"Failed to save ${games.length}!", Cause.fail(e)), _ => ZIO.logInfo(s"Successfully saved ${games.length} into table!"))
+    val effLogged = eff.tapBoth(
+      e => ZIO.logErrorCause(s"Failed to save ${games.length}!", Cause.fail(e)),
+      _ => ZIO.logInfo(s"Successfully saved ${games.length} into table!")
+    )
     effLogged @@ Span.log
 
   class Impl(executor: DynamoDBExecutor) extends GameRepo:
@@ -49,14 +52,17 @@ object GameRepo:
       yield historicalGames
 
     override def save(userId: UserId, games: Seq[HistoricalGame]): φ[Unit] =
-      val eff = 
+      val eff =
         val records = games.map(game => GameRecord.fromGame(userId, game))
         GameRecord.Table
           .putMany(records*)
           .provideLayer(layer)
           .catchNonFatalOrDie(e => ZIO.logError(e.getMessage()) *> ZIO.fail(BrokenLogic.ServiceOverloaded))
-      
-      val effLogged = (ZIO.logInfo(s"Saving ${games.length} into table ...") *> eff).tapBoth(e => ZIO.logErrorCause(s"Failed to save ${games.length}!", Cause.fail(e)), _ => ZIO.logInfo(s"Successfully saved ${games.length} into table!"))
+
+      val effLogged = (ZIO.logInfo(s"Saving ${games.length} into table ...") *> eff).tapBoth(
+        e => ZIO.logErrorCause(s"Failed to save ${games.length}!", Cause.fail(e)),
+        _ => ZIO.logInfo(s"Successfully saved ${games.length} into table!")
+      )
       effLogged @@ Span.log
 
   object Impl:

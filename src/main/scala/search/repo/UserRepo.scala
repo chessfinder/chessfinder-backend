@@ -50,7 +50,7 @@ object UserRepo:
         .tapError(e => ZIO.logErrorCause(e.getMessage(), Cause.fail(e)))
         .mapError(_ => BrokenLogic.ServiceOverloaded)
       eff @@ Span.log
-      
+
   object Impl:
     val layer = ZLayer {
       for executor <- ZIO.service[DynamoDBExecutor]

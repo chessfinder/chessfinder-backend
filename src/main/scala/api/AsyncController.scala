@@ -95,7 +95,9 @@ object AsyncController:
       blueprint.`GET /api/version/task`.zServerLogic(logic)
 
     val `GET /api/version`: ZServerEndpoint[GameFinder[V], Any] =
-      blueprint.`GET /api/version`.zServerLogic(_ => ZIO.succeed(buildinfo.BuildInfo.toString) @@ Span.log("VersionChecker"))
+      blueprint.`GET /api/version`.zServerLogic(_ =>
+        ZIO.succeed(buildinfo.BuildInfo.toString) @@ Span.log("VersionChecker")
+      )
 
     def rest =
       EndpointCombiner(

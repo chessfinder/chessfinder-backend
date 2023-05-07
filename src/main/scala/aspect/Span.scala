@@ -19,6 +19,6 @@ object Span:
         }
         span
     }
-  
+
   val log: ZIOAspect[Nothing, Any, Nothing, Any, Nothing, Any] =
     Span.log("Span")

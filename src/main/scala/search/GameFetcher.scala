@@ -75,7 +75,7 @@ object GameFetcher:
   class Local(userRepo: UserRepo, gameRepo: GameRepo) extends GameFetcher[ApiVersion.Async.type]:
 
     def fetch(user: User): φ[FetchingResult] =
-      val eff = 
+      val eff =
         for
           userCached <- userRepo.get(user)
           games      <- gameRepo.list(userCached)
