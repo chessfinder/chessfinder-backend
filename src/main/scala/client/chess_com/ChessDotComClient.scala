@@ -98,7 +98,12 @@ object ChessDotComClient:
           response <- client.request(request)
           profile <- response.status match
             case Status.Ok => response.body.to[Games].map(Right.apply)
-            case _         => μ.succeed(Left(SomethingWentWrong))
+            case status =>
+              val logging = for
+                bodyAsString <- response.body.asString
+                _            <- ZIO.logError(s"Response ${status.toString}: $bodyAsString")
+              yield ()
+              logging.ignore *> μ.succeed(Left(SomethingWentWrong))
         yield profile
       effect.foldZIO(_ => μ.fail(SomethingWentWrong), μ.fromEither)
 
