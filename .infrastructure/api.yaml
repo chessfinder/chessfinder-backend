@@ -4,6 +4,10 @@ Parameters:
   ChessfinderLambdaRoleArn:
     Type: String
     Description: Lambda role for basic execution and permissions
+  DownloadGamesQueueURL:
+    Type: String
+    Description: Url of the DownloadGamesQueue
+
 Resources:
   ChessfinderFunction:
     Properties:

@@ -29,14 +29,9 @@ import aspect.Span
 
 trait GameDownloader:
 
-  def cache(user: User): φ[TaskId]
-
   def download(user: UserIdentified, archives: Archives, taskId: TaskId): φ[Unit]
 
 object GameDownloader:
-
-  def cache(user: User): ψ[GameDownloader, TaskId] =
-    ZIO.serviceWithZIO[GameDownloader](_.cache(user))
 
   def download(user: UserIdentified, archives: Archives, taskId: TaskId): ψ[GameDownloader, Unit] =
     ZIO.serviceWithZIO[GameDownloader](_.download(user, archives, taskId))
@@ -84,33 +79,6 @@ object GameDownloader:
 
       eff.unit
 
-    def cache(user: User): φ[TaskId] =
-      val gettingProfile = client
-        .profile(user.userName)
-        .mapError {
-          case ClientError.ProfileNotFound(userName) => BrokenLogic.ProfileNotFound(user)
-          case _                                     => BrokenLogic.ServiceOverloaded
-        }
-        .map(profile => user.identified(UserId(profile.`@id`.toString)))
-
-      val gettingArchives = client
-        .archives(user.userName)
-        .mapError {
-          case ClientError.ProfileNotFound(userName) => BrokenLogic.ProfileNotFound(user)
-          case _                                     => BrokenLogic.ServiceOverloaded
-        }
-        .filterOrFail(_.archives.nonEmpty)(NoGameAvaliable(user))
-
-      for
-        userIdentified <- gettingProfile
-        _              <- userRepo.save(userIdentified)
-        archives       <- gettingArchives
-        taskId         <- random.nextUUID.map(uuid => TaskId(uuid))
-        _              <- taskRepo.initiate(taskId, archives.archives.length)
-        _              <- download(userIdentified, archives, taskId).forkDaemon
-      yield taskId
-
-  @Deprecated
   object Impl:
     val layer = ZLayer {
       for
