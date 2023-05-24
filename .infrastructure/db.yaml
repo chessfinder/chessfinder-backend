@@ -48,9 +48,7 @@ Resources:
           KeyType: HASH
         - AttributeName: game_id
           KeyType: RANGE
-      ProvisionedThroughput:
-        ReadCapacityUnits: 10
-        WriteCapacityUnits: 10
+      BillingMode: PAY_PER_REQUEST
 
 Outputs:
   UsersTableName:

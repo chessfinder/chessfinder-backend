@@ -79,28 +79,33 @@ object LambdaMain extends BaseMain with RequestStreamHandler:
     )
 
   def process(input: InputStream, output: OutputStream) =
-    handler
+    val hand = handler
       .process[AwsRequest](input, output)
-      .provide(
-        clientLayer,
-        BoardValidator.Impl.layer,
-        GameFinder.Impl.layer[ApiVersion.Newborn.type],
-        GameFinder.Impl.layer[ApiVersion.Async.type],
-        Searcher.Impl.layer,
-        GameFetcher.Impl.layer,
-        GameFetcher.Local.layer,
-        ChessDotComClient.Impl.layer,
-        UserRepo.Impl.layer,
-        GameRepo.Impl.layer,
-        TaskRepo.Impl.layer,
-        TaskStatusChecker.Impl.layer,
-        ArchiveDownloader.Impl.layer,
-        GameDownloadingProducer.Impl.layer,
-        DownloadGameCommand.Queue.layer,
-        dynamodbLayer,
-        sqsLayer,
-        ZLayer.succeed(zio.Random.RandomLive)
-      )
+
+    (for
+      _ <- ZIO.logInfo("BEFORE $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
+      r <- hand
+      _ <- ZIO.logInfo("AFTER $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
+    yield r).provide(
+      clientLayer,
+      BoardValidator.Impl.layer,
+      GameFinder.Impl.layer[ApiVersion.Newborn.type],
+      GameFinder.Impl.layer[ApiVersion.Async.type],
+      Searcher.Impl.layer,
+      GameFetcher.Impl.layer,
+      GameFetcher.Local.layer,
+      ChessDotComClient.Impl.layer,
+      UserRepo.Impl.layer,
+      GameRepo.Impl.layer,
+      TaskRepo.Impl.layer,
+      TaskStatusChecker.Impl.layer,
+      ArchiveDownloader.Impl.layer,
+      GameDownloadingProducer.Impl.layer,
+      DownloadGameCommand.Queue.layer,
+      dynamodbLayer,
+      sqsLayer,
+      ZLayer.succeed(zio.Random.RandomLive)
+    )
 
   override def handleRequest(input: InputStream, output: OutputStream, context: Context): Unit =
     Unsafe.unsafe { implicit unsafe =>

@@ -89,7 +89,13 @@ object DownloadGameCommandHandler extends BaseMain with RequestHandler[SQSEvent,
   private def process(input: SQSEvent, context: Context) =
     for
       messages <- ZIO.succeed(input.getRecords().asScala)
-      _        <- ZIO.collectAll(messages.map(message => processSingle(message, context)))
+      _        <- ZIO.logInfo(s"Recieved Messages ${messages.length}")
+      _ <- ZIO.collectAll(
+        messages.map(message =>
+          processSingle(message, context) @@ aspect.MessageId.log(message.getMessageId())
+        )
+      )
+      _ <- ZIO.logInfo(s"Messages ${messages.length} are processed")
     yield ()
 
   private def processSingle(message: SQSMessage, context: Context) =
@@ -131,9 +137,9 @@ object DownloadGameCommandHandler extends BaseMain with RequestHandler[SQSEvent,
               GameDownloader.Impl.layer,
               dynamodbLayer,
               ZLayer.succeed(zio.Random.RandomLive)
-            )
-            @@ aspect.BuildInfo.log @@ aspect.CorrelationId
-              .log(context.getAwsRequestId())
+            ) @@
+            aspect.BuildInfo.log @@
+            aspect.CorrelationId.log(context.getAwsRequestId())
         )
         .getOrThrowFiberFailure()
     }

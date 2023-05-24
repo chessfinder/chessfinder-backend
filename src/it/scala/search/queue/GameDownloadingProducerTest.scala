@@ -72,19 +72,21 @@ object GameDownloadingProducerTest extends NarrowIntegrationSuite:
           val expectedResult = Set(expectedCommand1, expectedCommand2)
 
           val firingCommands =
-           GameDownloadingProducer.publish(user, archives, taskId)
+            GameDownloadingProducer.publish(user, archives, taskId)
 
-          val readingFromQueue = 
-            for 
-              subscriber <- ZIO.service[PubSub[DownloadGameCommand]]
+          val readingFromQueue =
+            for
+              subscriber             <- ZIO.service[PubSub[DownloadGameCommand]]
               actualCommandsOrErrors <- subscriber.subscribe.run(ZSink.collectAllToSet)
-              actualCommands = actualCommandsOrErrors.collect{case Right(command) => command}
+              actualCommands = actualCommandsOrErrors.collect { case Right(command) => command }
             yield actualCommands
           for
             _            <- firingCommands
             actualResult <- readingFromQueue
-            result      <- assertTrue(actualResult  == expectedResult)
+            result       <- assertTrue(actualResult == expectedResult)
           yield result
         }
       )
-    ).provideLayer((configLayer >+> (dynamodbLayer ++ sqsLayer) >+> DownloadGameCommand.Queue.layer) >+> GameDownloadingProducer.Impl.layer) @@ TestAspect.sequential
+    ).provideLayer(
+      (configLayer >+> (dynamodbLayer ++ sqsLayer) >+> DownloadGameCommand.Queue.layer) >+> GameDownloadingProducer.Impl.layer
+    ) @@ TestAspect.sequential

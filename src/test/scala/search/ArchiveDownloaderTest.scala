@@ -74,7 +74,8 @@ object ArchiveDownloaderTest extends ZIOSpecDefault with Mocks:
           result = Expectation.unit
         )
 
-        val mock = (getProfile ++ saveUser ++ getArchiveCall ++ generateTaskId ++ initiatingTask ++ firingCommands).toLayer
+        val mock =
+          (getProfile ++ saveUser ++ getArchiveCall ++ generateTaskId ++ initiatingTask ++ firingCommands).toLayer
 
         val caching = ArchiveDownloader
           .cache(user)
@@ -195,7 +196,13 @@ object ArchiveDownloaderTest extends ZIOSpecDefault with Mocks:
           actualResult <- caching.either
           check = assertTrue(actualResult == Left(NoGameAvaliable(user)))
         yield check)
-          .provide(mock, GameDownloadingProducerMock.empty, TaskRepoMock.empty, ArchiveDownloader.Impl.layer, MockRandom.empty)
+          .provide(
+            mock,
+            GameDownloadingProducerMock.empty,
+            TaskRepoMock.empty,
+            ArchiveDownloader.Impl.layer,
+            MockRandom.empty
+          )
       }
     )
   ) @@ TestAspect.sequential @@ MockReporter()

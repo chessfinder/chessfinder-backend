@@ -15,7 +15,7 @@ import zio.aws.netty
 import zio.aws.core.httpclient.HttpClient
 import zio.aws.core.config.AwsConfig
 import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider
- 
+
 object DefaultSqsExecutor:
 
   val layer: ZLayer[HttpClient & AwsConfig, Throwable, Sqs] =
@@ -31,10 +31,9 @@ object DefaultSqsExecutor:
           .region(sqsConfig.regionValidated)
           .credentialsProvider(DefaultCredentialsProvider.create())
       }
-    }     
+    }
 
     val sqsExecutorLayer: ZLayer[HttpClient & AwsConfig, Throwable, Sqs] =
       (ZLayer.service[HttpClient] ++ ZLayer.succeed(Clock)) >>> ZLayer.service[AwsConfig] >>> cutomSqsLayer
-    
-    sqsExecutorLayer
 
+    sqsExecutorLayer

@@ -1,7 +1,7 @@
 package chessfinder
 package pubsub
 
-import search.entity.* 
+import search.entity.*
 import persistence.PlatformType
 import sttp.model.Uri
 import io.circe.Codec
@@ -21,13 +21,13 @@ import zio.aws.sqs.*
 import com.typesafe.config.ConfigFactory
 
 final case class DownloadGameCommand(
-  userName: String,
-  userId: String,
-  platform: Platform, 
-  resource: Uri,
-  taskId: UUID
+    userName: String,
+    userId: String,
+    platform: Platform,
+    resource: Uri,
+    taskId: UUID
 ):
-  def command: ProducerEvent[DownloadGameCommand] = 
+  def command: ProducerEvent[DownloadGameCommand] =
     ProducerEvent(
       data = this,
       attributes = Map.empty[String, MessageAttributeValue],
@@ -55,9 +55,9 @@ object DownloadGameCommand:
       given config: Config[Configuration] =
         deriveConfig[Configuration].nested("sqs-config", "queues", "download-games")
 
-    val layer: ZLayer[Sqs, Throwable, PubSub[DownloadGameCommand]] = ZLayer.fromZIO{
-      for 
+    val layer: ZLayer[Sqs, Throwable, PubSub[DownloadGameCommand]] = ZLayer.fromZIO {
+      for
         config <- ZIO.config[Configuration](Configuration.config)
-        queue <- PubSub.layer[DownloadGameCommand](config.url)
+        queue  <- PubSub.layer[DownloadGameCommand](config.url)
       yield queue
     }

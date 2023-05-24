@@ -61,20 +61,19 @@ object GameDownloader:
         def processFailure(err: BrokenLogic) =
           for
             _ <- ZIO.logError(s"Failure is registering for ${err}...")
-            _ <- taskRepo.failureIncrement(taskId)
+            _ <- taskRepo.failureIncrement(taskId).ignore
             _ <- ZIO.logInfo("Failure is registered ...")
           yield DownloadingResult(resource +: previousResult.failedArchives)
 
         val processSuccess =
           for
             _ <- ZIO.logInfo("Success is registering ...")
-            _ <- taskRepo.successIncrement(taskId)
+            _ <- taskRepo.successIncrement(taskId).ignore
             _ <- ZIO.logInfo("Success is registered ...")
           yield previousResult
 
         downloadingAndSavingGames
           .foldZIO(err => processFailure(err), _ => processSuccess)
-
       }
 
       eff.unit

@@ -8,7 +8,7 @@ import scala.concurrent.Future
 import sttp.tapir.json.circe.*
 import sttp.tapir.stringBody
 import sttp.tapir.ztapir.*
-import search.{ GameDownloader, GameFinder, TaskStatusChecker, ArchiveDownloader }
+import search.{ ArchiveDownloader, GameDownloader, GameFinder, TaskStatusChecker }
 import search.entity.*
 import zio.*
 import core.SearchFen

@@ -8,7 +8,8 @@ Resources:
   DownloadGames: 
     Type: AWS::SQS::Queue
     Properties: 
-      QueueName: "DownloadGames"
+      QueueName: "DownloadGames.fifo"
+      FifoQueue: true
 
   DownloadGamesFunction:
     Properties:
@@ -19,7 +20,7 @@ Resources:
             Queue: !GetAtt DownloadGames.Arn
             BatchSize: 10
           Type: SQS
-        
+      Timeout: 900
       Runtime: java11
       Handler: chessfinder.DownloadGameCommandHandler::handleRequest
       CodeUri: C:\Users\tohanyan\IdeaProjects\chessfinder\chess-finder-backend\target\scala-3.2.2\chessfinder-lambda.jar

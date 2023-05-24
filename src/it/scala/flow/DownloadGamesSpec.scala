@@ -115,7 +115,6 @@ object DownloadGamesSpec extends BroadIntegrationSuite:
             task <- res.body.to[TaskResponse]
           yield task
 
-
         def getTaskStatus(taskResponse: TaskResponse) =
           for
             response <- Client.request(url =
@@ -166,4 +165,4 @@ object DownloadGamesSpec extends BroadIntegrationSuite:
         yield equality && gameAreCached && userStubCheck && userStubCheck && archivesStubCheck && `2022-07_check` && `2022-08_check`
 
       }
-    ).provideShared(clientLayer ++ dynamodbLayer) @@ TestAspect.sequential  @@ TestAspect.ignore
+    ).provideShared(clientLayer ++ dynamodbLayer) @@ TestAspect.sequential @@ TestAspect.ignore

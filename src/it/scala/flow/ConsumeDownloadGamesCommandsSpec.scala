@@ -143,7 +143,7 @@ object ConsumeDownloadGamesCommandsSpec extends BroadIntegrationSuite:
           event.setRecords(messages.toList.asJava)
           val context = LambdaContext(0, 0L, RandomReadableString(), "", "", "", null, "", "", null)
           ZIO.attempt(DownloadGameCommandHandler.handleRequest(event, context))
-        
+
         def getTaskStatus(taskResponse: TaskResponse) =
           for
             response <- Client.request(url =
@@ -182,8 +182,8 @@ object ConsumeDownloadGamesCommandsSpec extends BroadIntegrationSuite:
           _                <- `2022-07`
           _                <- `2022-08`
           taskReponse      <- createTask
-          foundCommands <- gettingCommandsFromTheQueue
-          _ <- mimicCommandHandling(foundCommands)
+          foundCommands    <- gettingCommandsFromTheQueue
+          _                <- mimicCommandHandling(foundCommands)
           actualTaskStatus <- getTaskStatus(taskReponse).repeatUntil(_.pending == 0)
           expectedTaskStatus = makeExpectedTaskStatus(actualTaskStatus)
           equality          <- assertTrue(expectedTaskStatus == actualTaskStatus)
@@ -196,4 +196,6 @@ object ConsumeDownloadGamesCommandsSpec extends BroadIntegrationSuite:
         yield equality && gameAreCached && userStubCheck && userStubCheck && archivesStubCheck && `2022-07_check` && `2022-08_check`
 
       }
-    ).provideShared(configLayer >+> (clientLayer ++ dynamodbLayer ++ sqsLayer) >+> DownloadGameCommand.Queue.layer) @@ TestAspect.sequential
+    ).provideShared(
+      configLayer >+> (clientLayer ++ dynamodbLayer ++ sqsLayer) >+> DownloadGameCommand.Queue.layer
+    ) @@ TestAspect.sequential

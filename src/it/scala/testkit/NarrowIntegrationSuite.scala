@@ -24,10 +24,10 @@ abstract class NarrowIntegrationSuite extends ZIOSpecDefault:
 
   InitIntegrationEnv.Narrow.run
 
-  val configLayer = InitIntegrationEnv.Narrow.configLayer
-  val loggingLayer = InitIntegrationEnv.Narrow.loggingLayer
+  val configLayer   = InitIntegrationEnv.Narrow.configLayer
+  val loggingLayer  = InitIntegrationEnv.Narrow.loggingLayer
   val dynamodbLayer = InitIntegrationEnv.Narrow.dynamodbLayer
-  val sqsLayer = InitIntegrationEnv.Narrow.sqsLayer
+  val sqsLayer      = InitIntegrationEnv.Narrow.sqsLayer
 
   override val bootstrap: ZLayer[Any, Any, TestEnvironment] =
     configLayer >+> loggingLayer ++ testEnvironment

@@ -22,7 +22,9 @@ import zio.config.typesafe.TypesafeConfigProvider
 import zio.Cause
 import zio.sqs.{ SqsStream, SqsStreamSettings, Utils }
 import zio.aws.sqs.Sqs
+import zio.aws.sqs.model.QueueAttributeName
 import pubsub.core.*
+import software.amazon.awssdk.services.sqs.model.QueueAttributeName as JQueueAttributeName
 
 open class InitIntegrationEnv:
 
@@ -66,7 +68,10 @@ open class InitIntegrationEnv:
               ZIO.logErrorCause(e.getMessage, Cause.fail(e))
             )
 
-            _ <- Utils.createQueue("download-games")
+            _ <- Utils.createQueue(
+              "download-games.fifo",
+              Map(QueueAttributeName.wrap(JQueueAttributeName.FIFO_QUEUE) -> "true")
+            )
           yield ()
         dependentIo.provide(dynamodbLayer ++ sqsLayer)
 

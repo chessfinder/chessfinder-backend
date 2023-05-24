@@ -28,7 +28,7 @@ object GameDownloadingProducer:
       val commands = archives.archives.map(archive => DownloadGameCommand(user, archive, taskId))
       ZIO.scoped {
         publisher
-          .publish(commands)
+          .publish(commands.map(_.command))
           .tapBoth(
             err => ZIO.logErrorCause(s"Publishing events failed with ${err.getMessage()}", Cause.fail(err)),
             _ => ZIO.logInfo(s"Publishing ${commands.length} events has been successful.")

@@ -41,7 +41,7 @@ trait Publisher[T: Codec](queueUrl: String, sqs: Sqs):
     settings = Publisher.DefaultSettings
   )
 
-  def publish(data: Seq[T]): Task[Unit] =
+  private def publishEvents(data: Seq[T]): Task[Unit] =
     val events = data.map(event =>
       ProducerEvent(
         data = event,
@@ -51,6 +51,9 @@ trait Publisher[T: Codec](queueUrl: String, sqs: Sqs):
         delay = None
       )
     )
+    publish(events)
+
+  def publish(events: Seq[ProducerEvent[T]]): Task[Unit] =
     ZIO.scoped(producer.flatMap(_.produceBatch(events))).unit.provide(ZLayer.succeed(sqs))
 
 object Publisher:
@@ -66,6 +69,6 @@ object PubSub:
 
   def serializer[T: Codec]: Serializer[T] =
     Serializer.serializeString.contramap[T](command => Codec[T].apply(command).noSpaces)
-  
+
   def layer[T: Codec](queueUrl: String): ZIO[Sqs, Nothing, PubSub[T]] =
     ZIO.service[Sqs].map(sqs => PubSub(queueUrl, sqs))
