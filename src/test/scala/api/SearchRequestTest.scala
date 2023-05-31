@@ -1,16 +1,14 @@
 package chessfinder
 package api
 
-import munit.*
-import munit.Clue.generate
-import io.circe.parser
-import io.circe.Decoder
+import api.{FindRequest, Platform}
 import sttp.model.Uri
 import sttp.model.Uri.UriContext
-import chessfinder.api.FindRequest
-import chessfinder.api.Platform
+
+import io.circe.{Decoder, parser}
+import munit.*
+import munit.Clue.generate
 import zio.json.JsonDecoder
-import api.Platform
 
 class FindRequestTest extends FunSuite:
   test("FindRequest should be parsed correctly") {
