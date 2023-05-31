@@ -1,7 +1,7 @@
 package chessfinder
 package api
 
-import search.entity.{DownloadStatus, SearchResult, SearchStatus}
+import search.entity.{ DownloadStatus, SearchResult, SearchStatus }
 import sttp.model.Uri
 import sttp.tapir.Schema
 
@@ -9,23 +9,32 @@ import io.circe.Codec
 import io.circe.generic.semiauto.deriveCodec
 import zio.json.*
 
-final case class FindResponse(
-    resources: Seq[Uri],
-    message: String
+import java.time.Instant
+import java.util.UUID
+
+final case class SearchResultResponse(
+    id: UUID,
+    startSearchAt: Instant,
+    lastExaminedAt: Instant,
+    examined: Int,
+    total: Int,
+    matched: Seq[Uri],
+    status: SearchStatusType
 )
 
-object FindResponse:
+object SearchResultResponse:
   import util.UriCodec.given
 
-  given Codec[FindResponse]  = deriveCodec[FindResponse]
-  given Schema[FindResponse] = Schema.derived[FindResponse]
+  given Codec[SearchResultResponse]  = deriveCodec[SearchResultResponse]
+  given Schema[SearchResultResponse] = Schema.derived[SearchResultResponse]
 
-  given JsonEncoder[FindResponse] = DeriveJsonEncoder.gen[FindResponse]
-
-  def fromSearchResult(result: SearchResult): FindResponse = ???
-    // val message = result.status match
-    //   case SearchStatus.SearchedAll => "All games are successfully analized."
-    //   case SearchStatus.SearchedPartially    => "Not all games are analized."
-    //   case SearchStatus.InProgress    => "Not all games are analized."
-      
-    // FindResponse(resources = result.matched.map(_.resource), message = message)
+  def fromSearchResult(result: SearchResult): SearchResultResponse =
+    SearchResultResponse(
+      id = result.id.value,
+      startSearchAt = result.startSearchAt,
+      lastExaminedAt = result.lastExaminedAt,
+      examined = result.examined,
+      total = result.total,
+      matched = result.matched.map(_.resource),
+      status = SearchStatusType.fromSearchStatus(result.status)
+    )

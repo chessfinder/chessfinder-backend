@@ -1,54 +1,46 @@
 package chessfinder
 package flow
 
-import zio.test.*
-import zio.*
-import client.chess_com.ChessDotComClient
-import chessfinder.testkit.wiremock.ClientBackdoor
-import sttp.model.Uri
-import client.chess_com.dto.*
+import api.{ SearchResponse, TaskResponse, TaskStatusResponse }
 import client.*
 import client.ClientError.*
-import search.entity.{ ChessPlatform, UserName }
-import scala.util.Success
-import zio.http.Client
-import sttp.model.Uri.UriContext
-import zio.http.service.{ ChannelFactory, EventLoopGroup }
-import zio.*
-import testkit.BroadIntegrationSuite
-import zio.http.Body
 import client.ClientExt.*
-import chessfinder.api.FindResponse
-import api.FindResponse
-import zio.http.Client
-import io.circe.*
-import io.circe.parser
-import scala.io.Source
-import testkit.parser.JsonReader
-import chessfinder.api.TaskResponse
-import zio.http.model.Method
-import scala.concurrent.duration.*
-import zio.Duration as ZDuration
-import com.typesafe.config.{ Config, ConfigFactory }
-import zio.dynamodb.*
-import zio.aws.netty
-import zio.aws.core.config.AwsConfig
-import chessfinder.api.TaskStatusResponse
-import chessfinder.util.RandomReadableString
+import client.chess_com.ChessDotComClient
+import client.chess_com.dto.*
+import persistence.{ GameRecord, PlatformType, UserRecord }
 import persistence.core.DefaultDynamoDBExecutor
-import chessfinder.search.repo.UserRepo
-import chessfinder.persistence.UserRecord
-import chessfinder.persistence.PlatformType
-import chessfinder.persistence.GameRecord
-import chessfinder.search.GameDownloader
-import com.amazonaws.services.lambda.runtime.events.SQSEvent
-import com.amazonaws.services.lambda.runtime.events.SQSEvent.SQSMessage
-import pubsub.core.PubSub
 import pubsub.DownloadGameCommand
-import zio.stream.ZSink
+import pubsub.core.PubSub
+import search.GameDownloader
+import search.entity.{ ChessPlatform, UserName }
+import search.repo.UserRepo
+import sttp.model.Uri
+import sttp.model.Uri.UriContext
+import testkit.BroadIntegrationSuite
+import testkit.parser.JsonReader
+import testkit.wiremock.ClientBackdoor
+import util.RandomReadableString
+
 import com.amazonaws.services.lambda.runtime.Context
 import com.amazonaws.services.lambda.runtime.api.client.api.LambdaContext
+import com.amazonaws.services.lambda.runtime.events.SQSEvent
+import com.amazonaws.services.lambda.runtime.events.SQSEvent.SQSMessage
+import com.typesafe.config.{ Config, ConfigFactory }
+import io.circe.{ parser, * }
+import zio.{ Duration as ZDuration, * }
+import zio.aws.core.config.AwsConfig
+import zio.aws.netty
+import zio.dynamodb.*
+import zio.http.{ Body, Client }
+import zio.http.model.Method
+import zio.http.service.{ ChannelFactory, EventLoopGroup }
+import zio.stream.ZSink
+import zio.test.*
+
+import scala.concurrent.duration.*
+import scala.io.Source
 import scala.jdk.CollectionConverters.*
+import scala.util.Success
 
 object ConsumeDownloadGamesCommandsSpec extends BroadIntegrationSuite:
 
