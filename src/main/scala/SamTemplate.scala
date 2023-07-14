@@ -13,7 +13,7 @@ object SamTemplate extends App:
   val controller   = Controller("async")
   val endpoints    = controller.endpoints
 
-  val jarPath = Paths.get("target/scala-3.2.2/chessfinder-lambda.jar").toAbsolutePath.toString
+  val jarPath = Paths.get("target/scala-3.3.0/chessfinder-lambda.jar").toAbsolutePath.toString
 
   val samOptions: AwsSamOptions = AwsSamOptions(
     "Chessfinder",

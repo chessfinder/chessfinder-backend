@@ -11,7 +11,7 @@ ThisBuild / idePackagePrefix := Some("chessfinder")
 ThisBuild / organization := "eudemonia"
 // ThisBuild / version           := "0.1"
 ThisBuild / git.useGitDescribe := true
-ThisBuild / scalaVersion       := "3.2.2"
+ThisBuild / scalaVersion       := "3.3.0"
 ThisBuild / semanticdbEnabled  := true // enable SemanticDB
 ThisBuild / testFrameworks ++= List(
   new TestFramework("munit.Framework"),

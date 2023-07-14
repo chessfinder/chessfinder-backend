@@ -24,7 +24,7 @@ Resources:
       Timeout: 900
       Runtime: java11
       Handler: chessfinder.DownloadGameCommandHandler::handleRequest
-      CodeUri: ../target/scala-3.2.2/chessfinder-lambda.jar
+      CodeUri: ../target/scala-3.3.0/chessfinder-lambda.jar
       Role: !Ref 'ChessfinderLambdaRoleArn'
     Type: AWS::Serverless::Function
 
@@ -47,7 +47,7 @@ Resources:
       Timeout: 900
       Runtime: java11
       Handler: chessfinder.SearchBoardCommandHandler::handleRequest
-      CodeUri: ../target/scala-3.2.2/chessfinder-lambda.jar
+      CodeUri: ../target/scala-3.3.0/chessfinder-lambda.jar
       Role: !Ref 'ChessfinderLambdaRoleArn'
     Type: AWS::Serverless::Function
 

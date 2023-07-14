@@ -7,7 +7,7 @@ import java.nio.file.{Files, Paths}
 
 object LambdaSamTemplate extends App {
 
-  val jarPath = Paths.get("src_ztapir_aws_lambda_tests/target/scala-3.2.2/ztapir-aws-lambda-tests.jar").toAbsolutePath.toString
+  val jarPath = Paths.get("src_ztapir_aws_lambda_tests/target/scala-3.3.0/ztapir-aws-lambda-tests.jar").toAbsolutePath.toString
 
   val samOptions: AwsSamOptions = AwsSamOptions(
     "Tests",

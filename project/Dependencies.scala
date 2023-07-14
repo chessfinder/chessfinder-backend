@@ -12,7 +12,7 @@ object Dependencies {
   }
 
   lazy val `zio-http`: Seq[ModuleID] = {
-    val version = "0.0.4"
+    val version = "3.0.0-RC2"
     Seq(
       "dev.zio" %% "zio-http" % version
     )
@@ -42,8 +42,8 @@ object Dependencies {
   }
 
   lazy val tapirPartial = {
-    val version          = "1.2.10"
-    val circeYamlVersion = "0.3.2"
+    val version          = "1.6.1"
+    val circeYamlVersion = "0.5.3"
     Seq(
       "com.softwaremill.sttp.tapir" %% "tapir-core"            % version,
       "com.softwaremill.sttp.tapir" %% "tapir-json-circe"      % version,
@@ -54,6 +54,7 @@ object Dependencies {
       "com.softwaremill.sttp.tapir" %% "tapir-redoc"           % version,
       "com.softwaremill.sttp.tapir" %% "tapir-openapi-docs"    % version,
       "com.softwaremill.sttp.tapir" %% "tapir-aws-lambda"      % version,
+      "com.softwaremill.sttp.tapir" %% "tapir-aws-lambda-zio"      % version,
       // "com.softwaremill.sttp.tapir"   %% "tapir-aws-cdk"         % version,
       // "com.softwaremill.sttp.tapir"   %% "tapir-aws-sam"         % version,
       "com.softwaremill.sttp.apispec" %% "openapi-circe-yaml" % circeYamlVersion
@@ -61,7 +62,7 @@ object Dependencies {
   }
 
   lazy val tapir = {
-    val version = "1.2.10"
+    val version = "1.6.1"
     // Seq(
     //   "com.softwaremill.sttp.tapir" %% "tapir-aws-sam" % version
     // ) ++
