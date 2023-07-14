@@ -112,16 +112,7 @@ lazy val root = (project in file("."))
         oldStrategy(x)
     }
   )
-  .dependsOn(`ztapir-aws-lambda`, `tapir-aws-sam`, testkit % Test)
+  .dependsOn(testkit % Test)
 
 lazy val testkit = project
   .in(file("src_testkit"))
-
-lazy val `ztapir-aws-lambda` = project
-  .in(file("src_ztapir_aws_lambda"))
-
-lazy val `ztapir-aws-lambda-tests` = project
-  .in(file("src_ztapir_aws_lambda_tests"))
-
-lazy val `tapir-aws-sam` = project
-  .in(file("src_tapir_aws_sam"))

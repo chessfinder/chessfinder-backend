@@ -22,7 +22,7 @@ Resources:
             BatchSize: 10
           Type: SQS
       Timeout: 900
-      Runtime: java11
+      Runtime: java17
       Handler: chessfinder.DownloadGameCommandHandler::handleRequest
       CodeUri: ../target/scala-3.3.0/chessfinder-lambda.jar
       Role: !Ref 'ChessfinderLambdaRoleArn'
@@ -45,7 +45,7 @@ Resources:
             BatchSize: 1
           Type: SQS
       Timeout: 900
-      Runtime: java11
+      Runtime: java17
       Handler: chessfinder.SearchBoardCommandHandler::handleRequest
       CodeUri: ../target/scala-3.3.0/chessfinder-lambda.jar
       Role: !Ref 'ChessfinderLambdaRoleArn'

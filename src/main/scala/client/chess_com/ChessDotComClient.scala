@@ -13,7 +13,7 @@ import io.circe.generic.semiauto.*
 import io.circe.{ Decoder, Encoder }
 import zio.{ Cause, Config, ZIO, ZLayer }
 import zio.config.magnolia.deriveConfig
-import zio.http.{ Client, Request, URL, Status }
+import zio.http.{ Client, Request, Status, URL }
 
 trait ChessDotComClient:
 

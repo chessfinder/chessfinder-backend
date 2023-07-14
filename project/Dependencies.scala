@@ -41,7 +41,7 @@ object Dependencies {
     )
   }
 
-  lazy val tapirPartial = {
+  lazy val tapir = {
     val version          = "1.6.1"
     val circeYamlVersion = "0.5.3"
     Seq(
@@ -55,18 +55,9 @@ object Dependencies {
       "com.softwaremill.sttp.tapir" %% "tapir-openapi-docs"    % version,
       "com.softwaremill.sttp.tapir" %% "tapir-aws-lambda"      % version,
       "com.softwaremill.sttp.tapir" %% "tapir-aws-lambda-zio"      % version,
-      // "com.softwaremill.sttp.tapir"   %% "tapir-aws-cdk"         % version,
-      // "com.softwaremill.sttp.tapir"   %% "tapir-aws-sam"         % version,
+      "com.softwaremill.sttp.tapir" %% "tapir-aws-sam" % version,
       "com.softwaremill.sttp.apispec" %% "openapi-circe-yaml" % circeYamlVersion
     )
-  }
-
-  lazy val tapir = {
-    val version = "1.6.1"
-    // Seq(
-    //   "com.softwaremill.sttp.tapir" %% "tapir-aws-sam" % version
-    // ) ++
-    tapirPartial
   }
 
   lazy val tagging = {
@@ -109,7 +100,8 @@ object Dependencies {
 
   lazy val scalachess = {
     val version = "14.5.5"
-    Seq("org.lichess" %% "scalachess" % version exclude ("com.github.ornicar", "*"))
+    // Seq("org.lichess" %% "scalachess" % version exclude ("com.github.ornicar", "*"))
+    Seq("org.lichess" %% "scalachess" % version)
   }
 
   lazy val munit = {
