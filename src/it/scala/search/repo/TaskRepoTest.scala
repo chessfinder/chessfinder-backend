@@ -4,17 +4,17 @@ package search.repo
 import client.*
 import client.ClientError.*
 import client.chess_com.ChessDotComClient
-import client.chess_com.dto.*
+import client.chess_com.*
 import persistence.core.DefaultDynamoDBExecutor
 import persistence.{ GameRecord, PlatformType, TaskRecord, UserRecord }
-import search.BrokenLogic
-import search.entity.*
+import search.*
 import testkit.NarrowIntegrationSuite
 import testkit.parser.JsonReader
 import testkit.wiremock.ClientBackdoor
 import util.UriParser
 
 import chess.format.pgn.PgnStr
+import chessfinder.BrokenComputation
 import com.typesafe.config.ConfigFactory
 import io.circe.*
 import sttp.model.Uri
@@ -64,7 +64,7 @@ object TaskRepoTest extends NarrowIntegrationSuite:
         test("should give back TaskNotFound if task does not exists in the database") {
 
           val taskId         = TaskId(UUID.randomUUID())
-          val expectedResult = BrokenLogic.TaskNotFound(taskId)
+          val expectedResult = BrokenComputation.TaskNotFound(taskId)
 
           for
             taskRepo     <- repo
@@ -92,7 +92,7 @@ object TaskRepoTest extends NarrowIntegrationSuite:
 
           val taskId         = TaskId(UUID.randomUUID())
           val task           = TaskRecord(taskId, succeed = 1, failed = 2, done = 3, pending = 7, total = 1)
-          val extectedResult = BrokenLogic.TaskProgressOverflown(taskId)
+          val extectedResult = BrokenComputation.TaskProgressOverflown(taskId)
           for
             taskRepo     <- repo
             _            <- TaskRecord.Table.put(task)
@@ -103,7 +103,7 @@ object TaskRepoTest extends NarrowIntegrationSuite:
         test("should give back TaskNotFound if task does not exists in the database") {
 
           val taskId         = TaskId(UUID.randomUUID())
-          val expectedResult = BrokenLogic.TaskNotFound(taskId)
+          val expectedResult = BrokenComputation.TaskNotFound(taskId)
 
           for
             taskRepo     <- repo
@@ -131,7 +131,7 @@ object TaskRepoTest extends NarrowIntegrationSuite:
 
           val taskId         = TaskId(UUID.randomUUID())
           val task           = TaskRecord(taskId, succeed = 1, failed = 2, done = 3, pending = 7, total = 1)
-          val extectedResult = BrokenLogic.TaskProgressOverflown(taskId)
+          val extectedResult = BrokenComputation.TaskProgressOverflown(taskId)
           for
             taskRepo     <- repo
             _            <- TaskRecord.Table.put(task)
@@ -142,7 +142,7 @@ object TaskRepoTest extends NarrowIntegrationSuite:
         test("should give back TaskNotFound if task does not exists in the database") {
 
           val taskId         = TaskId(UUID.randomUUID())
-          val expectedResult = BrokenLogic.TaskNotFound(taskId)
+          val expectedResult = BrokenComputation.TaskNotFound(taskId)
 
           for
             taskRepo     <- repo

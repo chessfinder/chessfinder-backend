@@ -4,22 +4,22 @@ package search.repo
 import aspect.Span
 import persistence.{ PlatformType, UserRecord }
 import search.*
-import search.entity.*
+import search.*
 
 import zio.dynamodb.{ DynamoDBError, DynamoDBExecutor }
 import zio.{ Cause, ZIO, ZLayer }
 
 trait UserRepo:
-  def get(user: User): φ[UserIdentified]
+  def get(user: User): Computation[UserIdentified]
 
-  def save(user: UserIdentified): φ[Unit]
+  def save(user: UserIdentified): Computation[Unit]
 
 object UserRepo:
 
   class Impl(executor: DynamoDBExecutor) extends UserRepo:
     private val layer = ZLayer.succeed(executor)
 
-    override def get(user: User): φ[UserIdentified] =
+    override def get(user: User): Computation[UserIdentified] =
       val eff = UserRecord.Table
         .get[UserRecord](user.userName, PlatformType.fromPlatform(user.platform))
         .provideLayer(layer)
@@ -29,18 +29,18 @@ object UserRepo:
           ZIO.logErrorCause(e.getMessage(), Cause.fail(e))
         }
         .catchNonFatalOrDie {
-          case e: DynamoDBError.ValueNotFound => ZIO.fail(BrokenLogic.ProfileIsNotCached(user))
-          case _                              => ZIO.fail(BrokenLogic.ServiceOverloaded)
+          case e: DynamoDBError.ValueNotFound => ZIO.fail(BrokenComputation.ProfileIsNotCached(user))
+          case _                              => ZIO.fail(BrokenComputation.ServiceOverloaded)
         }
         .map(_.toUser)
       eff @@ Span.log
 
-    override def save(user: UserIdentified): φ[Unit] =
+    override def save(user: UserIdentified): Computation[Unit] =
       val eff = UserRecord.Table
         .put(UserRecord.fromUserIdentified(user))
         .provideLayer(layer)
         .tapError(e => ZIO.logErrorCause(e.getMessage(), Cause.fail(e)))
-        .mapError(_ => BrokenLogic.ServiceOverloaded)
+        .mapError(_ => BrokenComputation.ServiceOverloaded)
       eff @@ Span.log
 
   object Impl:

@@ -1,11 +1,10 @@
 package chessfinder
 package search.repo
 
-import api.{ TaskResponse, TaskStatusResponse }
 import aspect.Span
 import persistence.{ PlatformType, SearchResultRecord, UserRecord }
 import search.*
-import search.entity.*
+import chessfinder.download.details.{DownloadResponse, DownloadStatusResponse}
 
 import zio.dynamodb.{ DynamoDBError, DynamoDBExecutor }
 import zio.{ Cause, ZIO, ZLayer }
@@ -18,18 +17,18 @@ trait SearchResultRepo:
       id: SearchRequestId,
       startSearchAt: Instant,
       total: Int
-  ): φ[SearchResult]
+  ): Computation[SearchResult]
 
-  def get(searchRequestId: SearchRequestId): φ[SearchResult]
+  def get(searchRequestId: SearchRequestId): Computation[SearchResult]
 
-  def update(searchResult: SearchResult): φ[Unit]
+  def update(searchResult: SearchResult): Computation[Unit]
 
 object SearchResultRepo:
 
   class Impl(executor: DynamoDBExecutor) extends SearchResultRepo:
     private val layer = ZLayer.succeed(executor)
 
-    override def get(searchRequestId: SearchRequestId): φ[SearchResult] =
+    override def get(searchRequestId: SearchRequestId): Computation[SearchResult] =
       SearchResultRecord.Table
         .get[SearchResultRecord](searchRequestId)
         .provideLayer(layer)
@@ -40,28 +39,28 @@ object SearchResultRepo:
           ZIO.logErrorCause(e.getMessage(), Cause.fail(e))
         }
         .catchNonFatalOrDie {
-          case e: DynamoDBError.ValueNotFound => ZIO.fail(BrokenLogic.SearchResultNotFound(searchRequestId))
-          case _                              => ZIO.fail(BrokenLogic.ServiceOverloaded)
+          case e: DynamoDBError.ValueNotFound => ZIO.fail(BrokenComputation.SearchResultNotFound(searchRequestId))
+          case _                              => ZIO.fail(BrokenComputation.ServiceOverloaded)
         }
 
-    override def update(searchResult: SearchResult): φ[Unit] =
+    override def update(searchResult: SearchResult): Computation[Unit] =
       SearchResultRecord.Table
         .put(SearchResultRecord.fromSearchResult(searchResult))
         .provideLayer(layer)
         .tapError(e => ZIO.logErrorCause(e.getMessage(), Cause.fail(e)))
-        .mapError(_ => BrokenLogic.ServiceOverloaded)
+        .mapError(_ => BrokenComputation.ServiceOverloaded)
 
     override def initiate(
         id: SearchRequestId,
         startSearchAt: Instant,
         total: Int
-    ): φ[SearchResult] =
+    ): Computation[SearchResult] =
       val searchResult = SearchResult(id, startSearchAt, total)
       SearchResultRecord.Table
         .put(SearchResultRecord.fromSearchResult(searchResult))
         .provideLayer(layer)
         .tapError(e => ZIO.logErrorCause(e.getMessage(), Cause.fail(e)))
-        .mapError(_ => BrokenLogic.ServiceOverloaded)
+        .mapError(_ => BrokenComputation.ServiceOverloaded)
         .map(_ => searchResult)
 
   object Impl:

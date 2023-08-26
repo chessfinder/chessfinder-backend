@@ -3,15 +3,14 @@ package search.repo
 
 import client.*
 import client.ClientError.*
-import client.chess_com.ChessDotComClient
-import client.chess_com.dto.*
+import client.chess_com.{ChessDotComClient, Games}
 import persistence.core.DefaultDynamoDBExecutor
-import persistence.{ GameRecord, PlatformType, UserRecord }
-import search.entity.*
+import persistence.{GameRecord, PlatformType, UserRecord}
+import search.*
 import testkit.NarrowIntegrationSuite
 import testkit.parser.JsonReader
 import testkit.wiremock.ClientBackdoor
-import util.{ RandomReadableString, UriParser }
+import util.{RandomReadableString, UriParser}
 
 import chess.format.pgn.PgnStr
 import com.typesafe.config.ConfigFactory
@@ -25,7 +24,7 @@ import zio.dynamodb.*
 import zio.http.Client
 import zio.test.*
 
-import scala.util.{ Success, Try }
+import scala.util.{Success, Try}
 
 object GameRepoTest extends NarrowIntegrationSuite:
 

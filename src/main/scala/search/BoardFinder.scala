@@ -3,27 +3,26 @@ package search
 
 import aspect.Span
 import core.{ ProbabilisticBoard, SearchFen }
-import search.entity.*
 import search.repo.{ GameRepo, SearchResultRepo }
 
-import izumi.reflect.Tag
+
 import zio.{ Clock, ZIO, ZLayer }
 
 trait BoardFinder:
 
-  def find(board: SearchFen, userId: UserId, searchRequestId: SearchRequestId): φ[Unit]
+  def find(board: SearchFen, userId: UserId, searchRequestId: SearchRequestId): Computation[Unit]
 
 object BoardFinder:
 
   class Impl(
-      validator: BoardValidator,
-      searchResultRepo: SearchResultRepo,
-      gameRepo: GameRepo,
-      searcher: Searcher,
-      clock: Clock
+              validator: BoardValidator,
+              searchResultRepo: SearchResultRepo,
+              gameRepo: GameRepo,
+              searcher: SearchFacadeAdapter,
+              clock: Clock
   ) extends BoardFinder:
 
-    def find(board: SearchFen, userId: UserId, searchRequestId: SearchRequestId): φ[Unit] =
+    def find(board: SearchFen, userId: UserId, searchRequestId: SearchRequestId): Computation[Unit] =
       val eff = for
         validatedBoard <- validator.validate(board)
         searchResult   <- searchResultRepo.get(searchRequestId)
@@ -50,7 +49,7 @@ object BoardFinder:
         validator  <- ZIO.service[BoardValidator]
         searchRepo <- ZIO.service[SearchResultRepo]
         gameRepo   <- ZIO.service[GameRepo]
-        searcher   <- ZIO.service[Searcher]
+        searcher   <- ZIO.service[SearchFacadeAdapter]
         clock      <- ZIO.service[Clock]
       yield Impl(validator, searchRepo, gameRepo, searcher, clock)
     }

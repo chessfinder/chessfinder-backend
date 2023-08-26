@@ -2,36 +2,36 @@ package chessfinder
 package search.repo
 
 import aspect.Span
-import persistence.{ GameRecord, PlatformType, UserRecord }
+import persistence.GameRecord
 import search.*
-import search.entity.*
+import search.*
 
 import zio.dynamodb.DynamoDBExecutor
-import zio.{ Cause, ZIO, ZLayer }
+import zio.{Cause, ZIO, ZLayer}
 
 trait GameRepo:
-  def list(userId: UserId): φ[Seq[HistoricalGame]]
-  def save(userId: UserId, games: Seq[HistoricalGame]): φ[Unit]
+  def list(userId: UserId): Computation[Seq[HistoricalGame]]
+  def save(userId: UserId, games: Seq[HistoricalGame]): Computation[Unit]
 
 object GameRepo:
 
   class Impl(executor: DynamoDBExecutor) extends GameRepo:
     private val layer = ZLayer.succeed(executor)
 
-    override def list(userId: UserId): φ[Seq[HistoricalGame]] =
+    override def list(userId: UserId): Computation[Seq[HistoricalGame]] =
       GameRecord.Table
         .list[GameRecord](userId)
         .provideLayer(layer)
-        .catchNonFatalOrDie(e => ZIO.logError(e.getMessage()) *> ZIO.fail(BrokenLogic.ServiceOverloaded))
+        .catchNonFatalOrDie(e => ZIO.logError(e.getMessage()) *> ZIO.fail(BrokenComputation.ServiceOverloaded))
         .map(_.map(_.toGame))
 
-    override def save(userId: UserId, games: Seq[HistoricalGame]): φ[Unit] =
+    override def save(userId: UserId, games: Seq[HistoricalGame]): Computation[Unit] =
       val eff =
         val records = games.map(game => GameRecord.fromGame(userId, game))
         GameRecord.Table
           .putMany(records*)
           .provideLayer(layer)
-          .catchNonFatalOrDie(e => ZIO.logError(e.getMessage()) *> ZIO.fail(BrokenLogic.ServiceOverloaded))
+          .catchNonFatalOrDie(e => ZIO.logError(e.getMessage()) *> ZIO.fail(BrokenComputation.ServiceOverloaded))
 
       val effLogged = (ZIO.logInfo(s"Saving ${games.length} into table ...") *> eff).tapBoth(
         e => ZIO.logErrorCause(s"Failed to save ${games.length}!", Cause.fail(e)),
