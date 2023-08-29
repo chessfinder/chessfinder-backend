@@ -4,12 +4,17 @@ package download
 import client.ClientError
 import client.ClientError.ProfileNotFound
 import client.chess_com.ChessDotComClient
-import BrokenComputation.{NoGameAvailable, ServiceOverloaded}
+import BrokenComputation.{ NoGameAvailable, ServiceOverloaded }
 import search.*
-import search.repo.*
 
-import chessfinder.download.details.{ArchiveRepo, DownloadGameCommandPublisher, DownloadStatusResponse, UserRegister}
-import zio.{Random, ZIO, ZLayer}
+import chessfinder.download.details.{
+  ArchiveRepo,
+  DownloadGameCommandPublisher,
+  DownloadStatusResponse,
+  TaskRepo,
+  UserRegister
+}
+import zio.{ Random, ZIO, ZLayer }
 
 trait ArchiveDownloader:
 
@@ -18,12 +23,12 @@ trait ArchiveDownloader:
 object ArchiveDownloader:
 
   class Impl(
-              client: ChessDotComClient,
-              userRepo: UserRegister,
-              archiveRepo: ArchiveRepo,
-              taskRepo: TaskRepo,
-              gameDownloadingCommandProducer: DownloadGameCommandPublisher,
-              random: Random
+      client: ChessDotComClient,
+      userRepo: UserRegister,
+      archiveRepo: ArchiveRepo,
+      taskRepo: TaskRepo,
+      gameDownloadingCommandProducer: DownloadGameCommandPublisher,
+      random: Random
   ) extends ArchiveDownloader:
 
     def cache(user: User): Computation[TaskId] =
@@ -32,7 +37,7 @@ object ArchiveDownloader:
         .tapError(err => ZIO.log(err.toString()))
         .mapError {
           case ClientError.ProfileNotFound(_) => BrokenComputation.ProfileNotFound(user)
-          case _                                     => BrokenComputation.ServiceOverloaded
+          case _                              => BrokenComputation.ServiceOverloaded
         }
         .map(profile => user.identified(UserId(profile.`@id`.toString)))
 
@@ -40,7 +45,7 @@ object ArchiveDownloader:
         .archives(user.userName)
         .mapError {
           case ClientError.ProfileNotFound(_) => BrokenComputation.ProfileNotFound(user)
-          case _                                     => BrokenComputation.ServiceOverloaded
+          case _                              => BrokenComputation.ServiceOverloaded
         }
         .filterOrFail(_.archives.nonEmpty)(NoGameAvailable(user))
 

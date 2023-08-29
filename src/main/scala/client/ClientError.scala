@@ -12,4 +12,4 @@ object ClientError:
   case class ArchiveNotFound(resource: Uri)      extends ClientError(s"Archive $resource not found!")
   case object SomethingWentWrong                 extends ClientError("Something went wrong!")
 
-type Call[T]    = IO[ClientError, T]
+type Call[T] = IO[ClientError, T]

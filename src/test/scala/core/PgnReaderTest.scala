@@ -3,7 +3,7 @@ package core
 
 import core.Arbitraries.given
 import core.ProbabilisticPiece.{ CertainPiece, CertainlyOccupied, ProbablyOccupied }
-import util.{ WalidatedUnsafeExt, DescriptionHelper }
+import util.{ DescriptionHelper, WalidatedUnsafeExt }
 
 import chess.ErrorStr.value
 import chess.Replay

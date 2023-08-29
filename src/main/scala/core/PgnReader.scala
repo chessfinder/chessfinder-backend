@@ -14,6 +14,6 @@ object PgnReader:
         Reader.full(pgnStr).leftMap(_.value)
       }
       .andThen {
-        case Result.Complete(replay)            => replay.validated
+        case Result.Complete(replay)       => replay.validated
         case Result.Incomplete(_, failure) => (failure.value: String).failed[Replay]
       }

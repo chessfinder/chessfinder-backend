@@ -44,7 +44,7 @@ object SearchRequestRegisterTest extends ZIOSpecDefault with Mocks:
         testResult
           .provide(
             mock,
-            UserRepoMock.empty,
+            UserFetcherMock.empty,
             BoardSearchingProducerMock.empty,
             ArchiveRepoMock.empty,
             SearchResultRepoMock.empty,
@@ -65,7 +65,7 @@ object SearchRequestRegisterTest extends ZIOSpecDefault with Mocks:
           result = Expectation.value(ProbabilisticBoard.empty)
         )
 
-        val `checking if user exists in database` = UserRepoMock.GetUser(
+        val `checking if user exists in database` = UserFetcherMock.GetUser(
           assertion = Assertion.equalTo(user),
           result = Expectation.failure(ProfileNotFound(user))
         )
@@ -102,7 +102,7 @@ object SearchRequestRegisterTest extends ZIOSpecDefault with Mocks:
           result = Expectation.value(ProbabilisticBoard.empty)
         )
 
-        val `checking if user exists in database` = UserRepoMock.GetUser(
+        val `checking if user exists in database` = UserFetcherMock.GetUser(
           assertion = Assertion.equalTo(user),
           result = Expectation.value(userIdentified)
         )
@@ -148,7 +148,7 @@ object SearchRequestRegisterTest extends ZIOSpecDefault with Mocks:
           result = Expectation.value(ProbabilisticBoard.empty)
         )
 
-        val `checking if user exists in database` = UserRepoMock.GetUser(
+        val `checking if user exists in database` = UserFetcherMock.GetUser(
           assertion = Assertion.equalTo(user),
           result = Expectation.value(userIdentified)
         )

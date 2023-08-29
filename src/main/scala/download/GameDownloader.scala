@@ -1,22 +1,12 @@
 package chessfinder
 package download
 
-import aspect.Span
-import client.ClientError
-import client.ClientError.ProfileNotFound
-import client.chess_com.{Archives, ChessDotComClient, Games}
-import persistence.{GameRecord, PlatformType, UserRecord}
-import BrokenComputation.{NoGameAvailable, ServiceOverloaded}
-import search.repo.*
+import BrokenComputation.ServiceOverloaded
+import client.chess_com.ChessDotComClient
+import download.details.{ ArchiveRepo, GameSaver, TaskRepo }
 
 import chess.format.pgn.PgnStr
-import chessfinder.BrokenComputation
-import chessfinder.download.details.{ArchiveRepo, DownloadResponse, DownloadStatusResponse}
-import sttp.model.Uri
-import zio.dynamodb.*
-import zio.{Clock, Random, UIO, ZIO, ZLayer}
-
-import scala.annotation.tailrec
+import zio.{ Clock, ZIO, ZLayer }
 
 trait GameDownloader:
 
@@ -28,7 +18,7 @@ object GameDownloader:
       client: ChessDotComClient,
       archiveRepo: ArchiveRepo,
       taskRepo: TaskRepo,
-      gameRepo: GameRepo,
+      gameSaver: GameSaver,
       clock: Clock
   ) extends GameDownloader:
 
@@ -54,7 +44,7 @@ object GameDownloader:
                 newGames = lastGame
                   .map(game => gameRecords.filter(_.endTimeEpoch > game.endTimeEpoch))
                   .getOrElse(gameRecords)
-                _ <- gameRepo.save(user.userId, newGames.map(_.game))
+                _ <- gameSaver.save(user.userId, newGames.map(_.game))
                 _ <- ZIO.logInfo(
                   s"Games in total ${newGames.length} for the archive ${archive.archiveId} are saved!"
                 )
@@ -88,7 +78,7 @@ object GameDownloader:
         client      <- ZIO.service[ChessDotComClient]
         archiveRepo <- ZIO.service[ArchiveRepo]
         taskRepo    <- ZIO.service[TaskRepo]
-        gameRepo    <- ZIO.service[GameRepo]
+        gameSaver   <- ZIO.service[GameSaver]
         clock       <- ZIO.service[Clock]
-      yield Impl(client, archiveRepo, taskRepo, gameRepo, clock)
+      yield Impl(client, archiveRepo, taskRepo, gameSaver, clock)
     }

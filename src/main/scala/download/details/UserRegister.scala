@@ -17,7 +17,7 @@ object UserRegister:
 
   class Impl(executor: DynamoDBExecutor) extends UserRegister:
     private val layer = ZLayer.succeed(executor)
-    
+
     override def save(user: UserIdentified): Computation[Unit] =
       val eff = UserRecord.Table
         .put(UserRecord.fromUserIdentified(user))

@@ -1,22 +1,18 @@
 package chessfinder
-package search.repo
+package search.details
 
 import aspect.Span
 import persistence.{ PlatformType, UserRecord }
-import search.*
-import search.*
 
 import zio.dynamodb.{ DynamoDBError, DynamoDBExecutor }
 import zio.{ Cause, ZIO, ZLayer }
 
-trait UserRepo:
+trait UserFetcher:
   def get(user: User): Computation[UserIdentified]
 
-  def save(user: UserIdentified): Computation[Unit]
+object UserFetcher:
 
-object UserRepo:
-
-  class Impl(executor: DynamoDBExecutor) extends UserRepo:
+  class Impl(executor: DynamoDBExecutor) extends UserFetcher:
     private val layer = ZLayer.succeed(executor)
 
     override def get(user: User): Computation[UserIdentified] =
@@ -33,14 +29,6 @@ object UserRepo:
           case _                              => ZIO.fail(BrokenComputation.ServiceOverloaded)
         }
         .map(_.toUser)
-      eff @@ Span.log
-
-    override def save(user: UserIdentified): Computation[Unit] =
-      val eff = UserRecord.Table
-        .put(UserRecord.fromUserIdentified(user))
-        .provideLayer(layer)
-        .tapError(e => ZIO.logErrorCause(e.getMessage(), Cause.fail(e)))
-        .mapError(_ => BrokenComputation.ServiceOverloaded)
       eff @@ Span.log
 
   object Impl:

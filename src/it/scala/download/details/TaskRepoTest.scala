@@ -1,5 +1,5 @@
 package chessfinder
-package search.repo
+package download.details
 
 import client.*
 import client.ClientError.*
@@ -15,6 +15,7 @@ import util.UriParser
 
 import chess.format.pgn.PgnStr
 import chessfinder.BrokenComputation
+import chessfinder.download.details.TaskRepo
 import com.typesafe.config.ConfigFactory
 import io.circe.*
 import sttp.model.Uri

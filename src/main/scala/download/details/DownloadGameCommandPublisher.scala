@@ -4,7 +4,7 @@ package download.details
 import pubsub.DownloadGameCommand
 import pubsub.core.Publisher
 
-import zio.{Cause, ZIO, ZLayer}
+import zio.{ Cause, ZIO, ZLayer }
 
 trait DownloadGameCommandPublisher:
 

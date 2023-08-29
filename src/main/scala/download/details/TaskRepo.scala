@@ -1,11 +1,10 @@
 package chessfinder
-package search.repo
+package download.details
 
 import aspect.Span
+import download.details.{ DownloadResponse, DownloadStatusResponse }
 import persistence.{ PlatformType, TaskRecord, UserRecord }
 import search.*
-import search.*
-import chessfinder.download.details.{DownloadResponse, DownloadStatusResponse}
 
 import zio.dynamodb.{ DynamoDBError, DynamoDBExecutor }
 import zio.{ Cause, ZIO, ZLayer }

@@ -5,7 +5,7 @@ import api.Platform
 import search.details
 import search.details.SearchRequest
 
-import io.circe.{Decoder, parser}
+import io.circe.{ parser, Decoder }
 import munit.*
 import munit.Clue.generate
 import sttp.model.Uri

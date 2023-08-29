@@ -1,7 +1,7 @@
 package chessfinder
 package api
 
-import io.circe.{Codec, Decoder, Encoder}
+import io.circe.{ Codec, Decoder, Encoder }
 import sttp.tapir.Schema
 import zio.json.JsonDecoder
 

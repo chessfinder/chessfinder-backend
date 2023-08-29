@@ -4,7 +4,7 @@ package core
 import core.BitboardSetOps.⊆
 
 import chess.bitboard.Bitboard.*
-import chess.bitboard.{Bitboard, Board}
+import chess.bitboard.{ Bitboard, Board }
 
 case class ProbabilisticBoard(
     certainBoard: Board,
@@ -13,7 +13,7 @@ case class ProbabilisticBoard(
 ):
 
   private val certainlyOccupied: Bitboard = certainlyOccupiedByUnknown | certainBoard.occupied
-  val certainlyFree               = ~(certainlyOccupied | maybeOccupied)
+  val certainlyFree                       = ~(certainlyOccupied | maybeOccupied)
 
   def includes(board: Board): Boolean =
     certainBoard.pawns ⊆ board.pawns &&

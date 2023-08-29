@@ -6,7 +6,7 @@ import persistence.TaskRecord
 import chessfinder.download.details.DownloadStatusResponse
 
 import zio.ZIO
-import zio.mock.{Expectation, MockReporter}
+import zio.mock.{ Expectation, MockReporter }
 import zio.test.*
 
 import java.util.UUID

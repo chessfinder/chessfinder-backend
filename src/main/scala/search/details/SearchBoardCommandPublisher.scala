@@ -6,7 +6,7 @@ import pubsub.SearchBoardCommand
 import pubsub.core.Publisher
 
 import zio.sqs.producer.ProducerEvent
-import zio.{Cause, ZIO, ZLayer}
+import zio.{ Cause, ZIO, ZLayer }
 
 trait SearchBoardCommandPublisher:
 
@@ -16,7 +16,11 @@ object SearchBoardCommandPublisher:
 
   class Impl(publisher: Publisher[SearchBoardCommand]) extends SearchBoardCommandPublisher:
 
-    override def publish(user: UserIdentified, board: SearchFen, searchRequestId: SearchRequestId): Computation[Unit] =
+    override def publish(
+        user: UserIdentified,
+        board: SearchFen,
+        searchRequestId: SearchRequestId
+    ): Computation[Unit] =
       val command = SearchBoardCommand(user.userId.value, board.value, searchRequestId.value)
       ZIO.scoped {
         publisher

@@ -6,20 +6,19 @@ import pubsub.DownloadGameCommand
 import pubsub.core.Subscriber
 import search.*
 import search.*
-import search.repo.{GameRepo, TaskRepo}
 
 import chessfinder.UserIdentified
 import chessfinder.app.MainModule
-import chessfinder.download.details.ArchiveRepo
+import chessfinder.download.details.{ ArchiveRepo, GameSaver, TaskRepo }
 import com.amazonaws.services.lambda.runtime.events.SQSEvent
 import com.amazonaws.services.lambda.runtime.events.SQSEvent.SQSMessage
-import com.amazonaws.services.lambda.runtime.{Context, RequestHandler}
-import io.circe.{Decoder, parser}
+import com.amazonaws.services.lambda.runtime.{ Context, RequestHandler }
+import io.circe.{ parser, Decoder }
 import zio.aws.sqs.Sqs
 import zio.config.typesafe.TypesafeConfigProvider
 import zio.dynamodb.*
-import zio.http.{Response, App as _}
-import zio.{Runtime, Unsafe, ZIO, ZLayer}
+import zio.http.{ App as _, Response }
+import zio.{ Runtime, Unsafe, ZIO, ZLayer }
 
 import scala.jdk.CollectionConverters.*
 
@@ -86,7 +85,7 @@ object Lambda extends MainModule with RequestHandler[SQSEvent, Unit]:
             .provide(
               clientLayer,
               ChessDotComClient.Impl.layer,
-              GameRepo.Impl.layer,
+              GameSaver.Impl.layer,
               ArchiveRepo.Impl.layer,
               TaskRepo.Impl.layer,
               GameDownloader.Impl.layer,

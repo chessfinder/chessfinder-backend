@@ -4,9 +4,9 @@ package download.details
 import api.Platform
 
 import io.circe.generic.semiauto.deriveCodec
-import io.circe.{Codec, Decoder, Encoder}
+import io.circe.{ Codec, Decoder, Encoder }
 import sttp.tapir.Schema
-import zio.json.{DeriveJsonDecoder, JsonDecoder}
+import zio.json.{ DeriveJsonDecoder, JsonDecoder }
 
 final case class DownloadRequest(
     user: String,

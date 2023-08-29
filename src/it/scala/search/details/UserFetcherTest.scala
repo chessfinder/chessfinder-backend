@@ -1,17 +1,17 @@
 package chessfinder
-package search.repo
+package search.details
 
 import client.*
 import client.ClientError.*
 import client.chess_com.ChessDotComClient
 import client.chess_com.*
 import persistence.core.DefaultDynamoDBExecutor
-import persistence.{GameRecord, PlatformType, UserRecord}
+import persistence.{ GameRecord, PlatformType, UserRecord }
 import search.*
 import testkit.NarrowIntegrationSuite
 import testkit.parser.JsonReader
 import testkit.wiremock.ClientBackdoor
-import util.{RandomReadableString, UriParser}
+import util.{ RandomReadableString, UriParser }
 
 import chess.format.pgn.PgnStr
 import chessfinder.BrokenComputation
@@ -26,31 +26,13 @@ import zio.dynamodb.*
 import zio.http.Client
 import zio.test.*
 
-import scala.util.{Success, Try}
+import scala.util.{ Success, Try }
 
-object UserRepoTest extends NarrowIntegrationSuite:
+object UserFetcherTest extends NarrowIntegrationSuite:
 
-  val repo = ZIO.service[UserRepo]
+  val repo = ZIO.service[UserFetcher]
   def spec =
-    suite("UserRepo")(
-      suite("save")(
-        test("should create new user in the database") {
-          val userName       = UserName(RandomReadableString())
-          val userId         = UserId(RandomReadableString())
-          val user           = chessfinder.User(ChessPlatform.ChessDotCom, userName)
-          val userIdentified = chessfinder.UserIdentified(ChessPlatform.ChessDotCom, userName, userId)
-
-          val expectedResult =
-            UserRecord(platform = PlatformType.CHESS_DOT_COM, user_name = userName, user_id = userId)
-
-          for
-            userRepo     <- repo
-            _            <- userRepo.save(userIdentified)
-            actualResult <- UserRecord.Table.get[UserRecord](userName, PlatformType.CHESS_DOT_COM)
-            result       <- assertTrue(actualResult == Right(expectedResult))
-          yield result
-        }
-      ),
+    suite("UserFetcher")(
       suite("get")(
         test("should get the user from the table if it exists") {
 
@@ -62,9 +44,9 @@ object UserRepoTest extends NarrowIntegrationSuite:
           val expectedResult = chessfinder.UserIdentified(ChessPlatform.ChessDotCom, userName, userId)
 
           for
-            userRepo     <- repo
+            UserFetcher  <- repo
             _            <- UserRecord.Table.put(record)
-            actualResult <- userRepo.get(user)
+            actualResult <- UserFetcher.get(user)
             result       <- assertTrue(actualResult == expectedResult)
           yield result
         },
@@ -75,10 +57,10 @@ object UserRepoTest extends NarrowIntegrationSuite:
           val expectedResult = BrokenComputation.ProfileIsNotCached(user)
 
           for
-            userRepo     <- repo
-            actualResult <- userRepo.get(user).either
+            UserFetcher  <- repo
+            actualResult <- UserFetcher.get(user).either
             result       <- assertTrue(actualResult == Left(expectedResult))
           yield result
         }
       )
-    ).provideLayer(dynamodbLayer >+> UserRepo.Impl.layer) @@ TestAspect.sequential
+    ).provideLayer(dynamodbLayer >+> UserFetcher.Impl.layer) @@ TestAspect.sequential

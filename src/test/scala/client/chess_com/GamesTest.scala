@@ -3,7 +3,7 @@ package client.chess_com
 
 import testkit.parser.JsonReader
 
-import io.circe.{Decoder, parser}
+import io.circe.{ parser, Decoder }
 import munit.*
 import munit.Clue.generate
 import sttp.model.Uri

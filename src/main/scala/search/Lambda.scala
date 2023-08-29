@@ -1,23 +1,20 @@
 package chessfinder
 package search
 
+import app.MainModule
 import core.SearchFen
 import pubsub.SearchBoardCommand
 import pubsub.core.Subscriber
-import search.*
-import search.*
-import search.repo.{GameRepo, SearchResultRepo}
+import search.details.{ GameFetcher, SearchResultRepo }
 
-import chessfinder.app.MainModule
 import com.amazonaws.services.lambda.runtime.events.SQSEvent
 import com.amazonaws.services.lambda.runtime.events.SQSEvent.SQSMessage
-import com.amazonaws.services.lambda.runtime.{Context, RequestHandler}
-import io.circe.generic.auto.*
-import io.circe.{Decoder, parser}
+import com.amazonaws.services.lambda.runtime.{ Context, RequestHandler }
+import io.circe.{ parser, Decoder }
 import zio.config.typesafe.TypesafeConfigProvider
 import zio.dynamodb.*
 import zio.http.App as _
-import zio.{Runtime, Unsafe, ZIO, ZLayer}
+import zio.{ Runtime, Unsafe, ZIO, ZLayer }
 
 import scala.jdk.CollectionConverters.*
 
@@ -84,7 +81,7 @@ object Lambda extends MainModule with RequestHandler[SQSEvent, Unit]:
         .run(
           process(input, context)
             .provide(
-              GameRepo.Impl.layer,
+              GameFetcher.Impl.layer,
               BoardFinder.Impl.layer,
               BoardValidator.Impl.layer,
               SearchResultRepo.Impl.layer,

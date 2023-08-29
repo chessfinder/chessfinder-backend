@@ -1,10 +1,10 @@
 package chessfinder
-package search.repo
+package search.details
 
 import aspect.Span
+import download.details.{ DownloadResponse, DownloadStatusResponse }
 import persistence.{ PlatformType, SearchResultRecord, UserRecord }
 import search.*
-import chessfinder.download.details.{DownloadResponse, DownloadStatusResponse}
 
 import zio.dynamodb.{ DynamoDBError, DynamoDBExecutor }
 import zio.{ Cause, ZIO, ZLayer }
@@ -39,8 +39,9 @@ object SearchResultRepo:
           ZIO.logErrorCause(e.getMessage(), Cause.fail(e))
         }
         .catchNonFatalOrDie {
-          case e: DynamoDBError.ValueNotFound => ZIO.fail(BrokenComputation.SearchResultNotFound(searchRequestId))
-          case _                              => ZIO.fail(BrokenComputation.ServiceOverloaded)
+          case e: DynamoDBError.ValueNotFound =>
+            ZIO.fail(BrokenComputation.SearchResultNotFound(searchRequestId))
+          case _ => ZIO.fail(BrokenComputation.ServiceOverloaded)
         }
 
     override def update(searchResult: SearchResult): Computation[Unit] =

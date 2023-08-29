@@ -2,18 +2,18 @@ package chessfinder
 package download.details
 
 import persistence.core.DefaultDynamoDBExecutor
-import persistence.{ArchiveRecord, GameRecord, PlatformType, UserRecord}
+import persistence.{ ArchiveRecord, GameRecord, PlatformType, UserRecord }
 import search.*
 import testkit.NarrowIntegrationSuite
 import testkit.parser.JsonReader
 import testkit.wiremock.ClientBackdoor
-import util.{RandomReadableString, UriParser}
+import util.{ RandomReadableString, UriParser }
 
 import cats.effect.kernel.syntax.resource
 import chess.format.pgn.PgnStr
 import chessfinder.download.details.ArchiveRepo
-import chessfinder.{BrokenComputation, download}
-import chessfinder.download.{ArchiveResult, ArchiveStatus}
+import chessfinder.{ download, BrokenComputation }
+import chessfinder.download.{ ArchiveResult, ArchiveStatus }
 import com.typesafe.config.ConfigFactory
 import io.circe.*
 import sttp.model.Uri
@@ -27,7 +27,7 @@ import zio.test.*
 
 import java.time.*
 import java.util.UUID
-import scala.util.{Success, Try}
+import scala.util.{ Success, Try }
 
 object ArchiveRepoTest extends NarrowIntegrationSuite:
 

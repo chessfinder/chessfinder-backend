@@ -1,9 +1,8 @@
 package chessfinder
 package search
 
-import search.repo.SearchResultRepo
-
-import zio.{ZIO, ZLayer}
+import chessfinder.search.details.SearchResultRepo
+import zio.{ ZIO, ZLayer }
 
 trait SearchResultChecker:
 

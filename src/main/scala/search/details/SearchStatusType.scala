@@ -3,7 +3,7 @@ package search.details
 
 import search.SearchStatus
 
-import io.circe.{Codec, Decoder, Encoder}
+import io.circe.{ Codec, Decoder, Encoder }
 import sttp.tapir.Schema
 
 import scala.util.Try

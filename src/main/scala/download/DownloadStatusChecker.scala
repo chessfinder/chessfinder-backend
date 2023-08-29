@@ -1,9 +1,7 @@
 package chessfinder
 package download
 
-import search.*
-import search.repo.*
-import chessfinder.download.details.DownloadStatusResponse
+import download.details.{ DownloadStatusResponse, TaskRepo }
 
 import zio.{ ZIO, ZLayer }
 

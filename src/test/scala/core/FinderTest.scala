@@ -3,9 +3,9 @@ package core
 
 import core.Arbitraries.given
 import core.ProbabilisticPiece.{ CertainPiece, CertainlyOccupied, ProbablyOccupied }
-import core.{ Walidated, SearchFen, * }
+import core.{ SearchFen, Walidated, * }
 import core.Walidated.Ext.*
-import util.{ WalidatedUnsafeExt, DescriptionHelper }
+import util.{ DescriptionHelper, WalidatedUnsafeExt }
 
 import chess.ErrorStr.value
 import chess.Replay

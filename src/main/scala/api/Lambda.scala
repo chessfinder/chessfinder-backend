@@ -2,25 +2,24 @@ package chessfinder
 package api
 
 import client.chess_com.ChessDotComClient
-import download.details.{ArchiveRepo, DownloadGameCommandPublisher, UserRegister}
-import download.{ArchiveDownloader, DownloadStatusChecker}
-import pubsub.{DownloadGameCommand, SearchBoardCommand}
+import download.details.{ ArchiveRepo, DownloadGameCommandPublisher, TaskRepo, UserRegister }
+import download.{ ArchiveDownloader, DownloadStatusChecker }
+import pubsub.{ DownloadGameCommand, SearchBoardCommand }
 import search.*
-import search.details.SearchBoardCommandPublisher
-import search.repo.*
+import search.details.{ SearchBoardCommandPublisher, SearchResultRepo, UserFetcher }
 
 import chessfinder.app.MainModule
-import com.amazonaws.services.lambda.runtime.{Context, RequestStreamHandler}
+import com.amazonaws.services.lambda.runtime.{ Context, RequestStreamHandler }
 import io.circe.generic.auto.*
 import sttp.tapir.serverless.aws.lambda.AwsRequest
-import sttp.tapir.serverless.aws.ziolambda.{AwsZioServerOptions, ZioLambdaHandler}
+import sttp.tapir.serverless.aws.ziolambda.{ AwsZioServerOptions, ZioLambdaHandler }
 import sttp.tapir.ztapir.*
 import zio.*
 import zio.config.typesafe.TypesafeConfigProvider
 import zio.dynamodb.*
-import zio.http.{Response, App as _}
+import zio.http.{ App as _, Response }
 
-import java.io.{InputStream, OutputStream}
+import java.io.{ InputStream, OutputStream }
 
 object Lambda extends MainModule with RequestStreamHandler:
 
@@ -47,7 +46,7 @@ object Lambda extends MainModule with RequestStreamHandler:
         clientLayer,
         BoardValidator.Impl.layer,
         ChessDotComClient.Impl.layer,
-        UserRepo.Impl.layer,
+        UserFetcher.Impl.layer,
         UserRegister.Impl.layer,
         TaskRepo.Impl.layer,
         ArchiveRepo.Impl.layer,
@@ -64,7 +63,7 @@ object Lambda extends MainModule with RequestStreamHandler:
         sqsLayer,
         ZLayer.succeed(zio.Random.RandomLive),
         ZLayer.succeed(zio.Clock.ClockLive),
-        ZLayer.fromZIO(ZIO.unit) //Holly mother of God
+        ZLayer.fromZIO(ZIO.unit) // Holly mother of God
       )
 
   override def handleRequest(input: InputStream, output: OutputStream, context: Context): Unit =

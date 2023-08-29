@@ -7,7 +7,7 @@ import search.details.SearchController
 import util.EndpointCombiner
 
 import sttp.tapir.ztapir.*
-import sttp.tapir.{Endpoint, stringBody}
+import sttp.tapir.{ stringBody, Endpoint }
 import zio.*
 
 class Controller(val version: String) extends ZTapir:

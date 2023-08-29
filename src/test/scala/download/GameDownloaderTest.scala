@@ -8,11 +8,11 @@ import download.GameDownloader
 import search.*
 
 import chess.format.pgn.PgnStr
-import chessfinder.client.chess_com.{Game, Games}
+import chessfinder.client.chess_com.{ Game, Games }
 import chessfinder.download
 import sttp.model.Uri.UriContext
 import zio.ZIO
-import zio.mock.{Expectation, MockClock, MockReporter}
+import zio.mock.{ Expectation, MockClock, MockReporter }
 import zio.test.*
 
 import java.time.*
@@ -65,7 +65,7 @@ object GameDownloaderTest extends ZIOSpecDefault with Mocks:
         val `save downloaded games` =
           val historicalGame1 = HistoricalGame(uri"https://example.com/1", PgnStr("Game1"))
           val historicalGame2 = HistoricalGame(uri"https://example.com/2", PgnStr("Game2"))
-          GameRepoMock.SaveGames(
+          GameSaverMock.SaveGames(
             assertion = Assertion.equalTo((userId, Seq(historicalGame1, historicalGame2))),
             result = Expectation.unit
           )
@@ -150,7 +150,7 @@ object GameDownloaderTest extends ZIOSpecDefault with Mocks:
 
         val `save downloaded games` =
           val historicalGame2 = HistoricalGame(uri"https://example.com/2", PgnStr("Game2"))
-          GameRepoMock.SaveGames(
+          GameSaverMock.SaveGames(
             assertion = Assertion.equalTo((userId, Seq(historicalGame2))),
             result = Expectation.unit
           )
@@ -241,7 +241,7 @@ object GameDownloaderTest extends ZIOSpecDefault with Mocks:
         testResult.provide(
           mock,
           ChessDotComClientMock.empty,
-          GameRepoMock.empty,
+          GameSaverMock.empty,
           GameDownloader.Impl.layer,
           MockClock.empty
         )
@@ -297,7 +297,7 @@ object GameDownloaderTest extends ZIOSpecDefault with Mocks:
             actualResult   <- gameDownloader.download(userIdentified, archiveId, taskId)
             check = assertTrue(actualResult == ())
           yield check
-        testResult.provide(mock, GameRepoMock.empty, GameDownloader.Impl.layer, MockClock.empty)
+        testResult.provide(mock, GameSaverMock.empty, GameDownloader.Impl.layer, MockClock.empty)
       },
       test(
         "when a valid user has been prvided with the archive, is has been downloaded but saving games has been failed should mark the process as failed"
@@ -340,7 +340,7 @@ object GameDownloaderTest extends ZIOSpecDefault with Mocks:
         val `save downloaded games` =
           val historicalGame1 = HistoricalGame(uri"https://example.com/1", PgnStr("Game1"))
           val historicalGame2 = HistoricalGame(uri"https://example.com/2", PgnStr("Game2"))
-          GameRepoMock.SaveGames(
+          GameSaverMock.SaveGames(
             assertion = Assertion.equalTo((userId, Seq(historicalGame1, historicalGame2))),
             result = Expectation.failure(BrokenComputation.ServiceOverloaded)
           )

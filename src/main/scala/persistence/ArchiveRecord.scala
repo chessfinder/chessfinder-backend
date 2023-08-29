@@ -1,13 +1,13 @@
 package chessfinder
 package persistence
 
-import persistence.core.{DynamoTable, DynamoTypeMappers}
+import persistence.core.{ DynamoTable, DynamoTypeMappers }
 import search.*
 import chessfinder.download.details.DownloadStatusResponse
 
-import chessfinder.download.{ArchiveResult, ArchiveStatus}
+import chessfinder.download.{ ArchiveResult, ArchiveStatus }
 import sttp.model.Uri
-import zio.schema.{DeriveSchema, Schema}
+import zio.schema.{ DeriveSchema, Schema }
 
 import java.time.Instant
 import java.util.UUID

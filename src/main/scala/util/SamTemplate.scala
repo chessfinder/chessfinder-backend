@@ -7,8 +7,8 @@ import alleycats.std.option
 import sttp.tapir.serverless.aws.sam.*
 
 import java.nio.charset.StandardCharsets.UTF_8
-import java.nio.file.{Files, Paths}
-import scala.concurrent.duration.{Duration, DurationInt, FiniteDuration}
+import java.nio.file.{ Files, Paths }
+import scala.concurrent.duration.{ Duration, DurationInt, FiniteDuration }
 
 object SamTemplate extends App:
 
@@ -22,7 +22,7 @@ object SamTemplate extends App:
     val source = CodeSource(
       "java17",
       jarPath,
-      "chessfinder.LambdaMain::handleRequest"
+      "chessfinder.api.Lambda::handleRequest"
     )
     AwsSamOptions(
       "Chessfinder",

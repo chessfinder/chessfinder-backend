@@ -1,13 +1,13 @@
 package chessfinder
 package pubsub.core
 
-import io.circe.{Codec, Decoder, parser}
+import io.circe.{ parser, Codec, Decoder }
 import zio.*
 import zio.aws.sqs.*
-import zio.aws.sqs.model.{DeleteMessageRequest, MessageAttributeValue}
+import zio.aws.sqs.model.{ DeleteMessageRequest, MessageAttributeValue }
 import zio.config.*
 import zio.sqs.*
-import zio.sqs.producer.{Producer, ProducerEvent, ProducerSettings}
+import zio.sqs.producer.{ Producer, ProducerEvent, ProducerSettings }
 import zio.sqs.serialization.Serializer
 import zio.stream.*
 

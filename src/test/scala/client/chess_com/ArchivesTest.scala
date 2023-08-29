@@ -1,7 +1,7 @@
 package chessfinder
 package client.chess_com
 
-import io.circe.{Decoder, parser}
+import io.circe.{ parser, Decoder }
 import munit.*
 import munit.Clue.generate
 import sttp.model.Uri

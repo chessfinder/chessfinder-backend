@@ -2,14 +2,14 @@ package chessfinder
 package search.details
 
 import core.SearchFen
-import download.{ArchiveDownloader, DownloadStatusChecker}
+import download.{ ArchiveDownloader, DownloadStatusChecker }
 import search.*
 import util.EndpointCombiner
 
-import chessfinder.api.{ApiError}
+import chessfinder.api.ApiError
 import sttp.tapir.json.circe.*
 import sttp.tapir.ztapir.*
-import sttp.tapir.{Endpoint, stringBody}
+import sttp.tapir.{ stringBody, Endpoint }
 import zio.*
 
 import java.util.UUID
@@ -17,7 +17,6 @@ import java.util.UUID
 class SearchController(val version: String) extends ZTapir:
 
   private val baseUrl = endpoint.in("api" / version)
-
 
   val `POST /api/version/board` =
     baseUrl.post
@@ -33,7 +32,6 @@ class SearchController(val version: String) extends ZTapir:
       .out(jsonBody[SearchStatusResponse])
       .errorOut(jsonBody[ApiError])
 
-
   lazy val endpoints: List[Endpoint[?, ?, ?, ?, ?]] =
     List(
       `POST /api/version/board`,
@@ -43,7 +41,6 @@ class SearchController(val version: String) extends ZTapir:
 object SearchController:
 
   class Impl(blueprint: SearchController) extends ZTapir:
-
 
     private val `GET /api/version/board`: ZServerEndpoint[SearchResultChecker, Any] =
       def logic(searchRequestId: UUID): zio.ZIO[SearchResultChecker, ApiError, SearchStatusResponse] =
@@ -72,4 +69,3 @@ object SearchController:
       blueprint.`POST /api/version/board`.zServerLogic(logic)
 
     def rest = EndpointCombiner(`GET /api/version/board`, `POST /api/version/board` :: Nil)
-

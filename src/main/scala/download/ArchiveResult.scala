@@ -1,10 +1,10 @@
 package chessfinder
 package download
 
-import chessfinder.{ArchiveId, BrokenComputation}
+import chessfinder.{ ArchiveId, BrokenComputation }
 import sttp.model.Uri
 
-import java.time.{Instant, YearMonth, ZoneOffset}
+import java.time.{ Instant, YearMonth, ZoneOffset }
 
 final case class ArchiveResult(
     userId: UserId,

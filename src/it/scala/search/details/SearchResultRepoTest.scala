@@ -1,21 +1,20 @@
 package chessfinder
-package search.repo
+package search.details
 
 import client.*
 import client.ClientError.*
-import client.chess_com.ChessDotComClient
 import client.chess_com.*
 import persistence.*
 import persistence.core.DefaultDynamoDBExecutor
+import search.details.SearchResultRepo
 import search.*
 import testkit.NarrowIntegrationSuite
 import testkit.parser.JsonReader
 import testkit.wiremock.ClientBackdoor
-import util.{RandomReadableString, UriParser}
+import util.{ RandomReadableString, UriParser }
 
 import cats.effect.kernel.syntax.resource
 import chess.format.pgn.PgnStr
-import chessfinder.search.{MatchedGame, SearchResult, SearchStatus}
 import com.typesafe.config.ConfigFactory
 import io.circe.*
 import sttp.model.Uri
@@ -29,7 +28,7 @@ import zio.test.*
 
 import java.time.*
 import java.util.UUID
-import scala.util.{Success, Try}
+import scala.util.{ Success, Try }
 
 object SearchResultRepoTest extends NarrowIntegrationSuite:
   val repo = ZIO.service[SearchResultRepo]

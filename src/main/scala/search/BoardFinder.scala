@@ -1,10 +1,8 @@
 package chessfinder
 package search
 
-import aspect.Span
-import core.{ ProbabilisticBoard, SearchFen }
-import search.repo.{ GameRepo, SearchResultRepo }
-
+import core.SearchFen
+import search.details.{ GameFetcher, SearchResultRepo }
 
 import zio.{ Clock, ZIO, ZLayer }
 
@@ -15,18 +13,18 @@ trait BoardFinder:
 object BoardFinder:
 
   class Impl(
-              validator: BoardValidator,
-              searchResultRepo: SearchResultRepo,
-              gameRepo: GameRepo,
-              searcher: SearchFacadeAdapter,
-              clock: Clock
+      validator: BoardValidator,
+      searchResultRepo: SearchResultRepo,
+      gameFetcher: GameFetcher,
+      searcher: SearchFacadeAdapter,
+      clock: Clock
   ) extends BoardFinder:
 
     def find(board: SearchFen, userId: UserId, searchRequestId: SearchRequestId): Computation[Unit] =
       val eff = for
         validatedBoard <- validator.validate(board)
         searchResult   <- searchResultRepo.get(searchRequestId)
-        games          <- gameRepo.list(userId)
+        games          <- gameFetcher.list(userId)
         matchingResult <- ZIO.collect(games) { game =>
           searcher
             .find(game.pgn, validatedBoard)
@@ -46,10 +44,10 @@ object BoardFinder:
   object Impl:
     def layer = ZLayer {
       for
-        validator  <- ZIO.service[BoardValidator]
-        searchRepo <- ZIO.service[SearchResultRepo]
-        gameRepo   <- ZIO.service[GameRepo]
-        searcher   <- ZIO.service[SearchFacadeAdapter]
-        clock      <- ZIO.service[Clock]
-      yield Impl(validator, searchRepo, gameRepo, searcher, clock)
+        validator   <- ZIO.service[BoardValidator]
+        searchRepo  <- ZIO.service[SearchResultRepo]
+        gameFetcher <- ZIO.service[GameFetcher]
+        searcher    <- ZIO.service[SearchFacadeAdapter]
+        clock       <- ZIO.service[Clock]
+      yield Impl(validator, searchRepo, gameFetcher, searcher, clock)
     }

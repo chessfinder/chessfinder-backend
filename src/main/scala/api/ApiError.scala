@@ -16,4 +16,4 @@ object ApiError:
     case err: BrokenComputation.TaskNotFound    => ApiError("TASK_NOT_FOUND", err.msg)
     case BrokenComputation.InvalidSearchBoard   => ApiError("INVALID_SEARCH_BOARD", err.msg)
     case err: BrokenComputation.NoGameAvailable => ApiError("NO_GAME_AVAILABLE", err.msg)
-    case err                              => ApiError("SERVER_OVERLOADED", err.msg)
+    case err                                    => ApiError("SERVER_OVERLOADED", err.msg)

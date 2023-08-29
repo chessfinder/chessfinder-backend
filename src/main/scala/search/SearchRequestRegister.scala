@@ -1,12 +1,10 @@
 package chessfinder
 package search
 
-import core.SearchFen
 import BrokenComputation.NoGameAvailable
-import search.repo.{ SearchResultRepo, UserRepo }
-import chessfinder.download.details.ArchiveRepo
-
-import chessfinder.search.details.SearchBoardCommandPublisher
+import core.SearchFen
+import download.details.ArchiveRepo
+import search.details.{ SearchBoardCommandPublisher, SearchResultRepo, UserFetcher }
 
 import zio.{ Clock, Random, ZIO, ZLayer }
 
@@ -19,7 +17,7 @@ object SearchRequestRegister:
   class Impl(
       validator: BoardValidator,
       boardSearchingProducer: SearchBoardCommandPublisher,
-      userRepo: UserRepo,
+      userFetcher: UserFetcher,
       archiveRepo: ArchiveRepo,
       searchResultRepo: SearchResultRepo,
       clock: Clock,
@@ -30,7 +28,7 @@ object SearchRequestRegister:
       for
         _ <- validator.validate(board)
         user = User(platform, userName)
-        userIdentified <- userRepo.get(user)
+        userIdentified <- userFetcher.get(user)
         archives       <- archiveRepo.getAll(userIdentified.userId)
         totalGames = archives.map(_.downloaded).sum
         _               <- ZIO.cond(totalGames > 0, (), NoGameAvailable(user))
@@ -40,16 +38,15 @@ object SearchRequestRegister:
         _               <- boardSearchingProducer.publish(userIdentified, board, searchResult.id)
       yield searchResult
 
-
   object Impl:
     def layer = ZLayer {
       for
         validator              <- ZIO.service[BoardValidator]
         boardSearchingProducer <- ZIO.service[SearchBoardCommandPublisher]
-        userRepo               <- ZIO.service[UserRepo]
+        userFetcher            <- ZIO.service[UserFetcher]
         archiveRepo            <- ZIO.service[ArchiveRepo]
         searchResultRepo       <- ZIO.service[SearchResultRepo]
         clock                  <- ZIO.service[Clock]
         random                 <- ZIO.service[Random]
-      yield Impl(validator, boardSearchingProducer, userRepo, archiveRepo, searchResultRepo, clock, random)
+      yield Impl(validator, boardSearchingProducer, userFetcher, archiveRepo, searchResultRepo, clock, random)
     }

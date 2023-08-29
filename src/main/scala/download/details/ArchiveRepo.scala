@@ -5,8 +5,8 @@ import download.ArchiveResult
 import persistence.ArchiveRecord
 
 import sttp.model.Uri
-import zio.dynamodb.{DynamoDBError, DynamoDBExecutor}
-import zio.{Cause, ZIO, ZLayer}
+import zio.dynamodb.{ DynamoDBError, DynamoDBExecutor }
+import zio.{ Cause, ZIO, ZLayer }
 
 trait ArchiveRepo:
 
@@ -50,7 +50,9 @@ object ArchiveRepo:
       ArchiveRecord.Table
         .list[ArchiveRecord](userId)
         .provideLayer(layer)
-        .catchNonFatalOrDie(e => ZIO.logError(e.getMessage()) *> ZIO.fail(BrokenComputation.ServiceOverloaded))
+        .catchNonFatalOrDie(e =>
+          ZIO.logError(e.getMessage()) *> ZIO.fail(BrokenComputation.ServiceOverloaded)
+        )
         .map(_.map(_.toArchiveResult))
 
     override def initiate(

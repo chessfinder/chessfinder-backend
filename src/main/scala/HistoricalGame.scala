@@ -1,7 +1,7 @@
 package chessfinder
 
 import chess.format.pgn.Reader.Result
-import chess.format.pgn.{PgnStr, Reader}
+import chess.format.pgn.{ PgnStr, Reader }
 import sttp.model.Uri
 
 case class HistoricalGame(resource: Uri, pgn: PgnStr):

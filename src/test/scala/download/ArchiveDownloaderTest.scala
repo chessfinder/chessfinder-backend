@@ -4,18 +4,18 @@ package download
 import BrokenComputation.*
 import client.ClientError
 import client.chess_com.*
-import core.{ProbabilisticBoard, SearchFen}
-import download.{ArchiveDownloader, GameDownloader}
+import core.{ ProbabilisticBoard, SearchFen }
+import download.{ ArchiveDownloader, GameDownloader }
 import search.*
 import util.UriParser
 
 import chess.format.pgn.PgnStr
-import chessfinder.client.chess_com.{Archives, Profile}
-import chessfinder.download.details.{DownloadResponse, DownloadStatusResponse}
+import chessfinder.client.chess_com.{ Archives, Profile }
+import chessfinder.download.details.{ DownloadResponse, DownloadStatusResponse }
 import sttp.model.Uri
 import sttp.model.Uri.UriContext
 import zio.ZIO
-import zio.mock.{Expectation, MockRandom, MockReporter}
+import zio.mock.{ Expectation, MockRandom, MockReporter }
 import zio.test.*
 
 import java.util.UUID
@@ -45,7 +45,7 @@ object ArchiveDownloaderTest extends ZIOSpecDefault with Mocks:
         val userIdentified = user.identified(userId)
 
         val `saving user into database` =
-          UserRepoMock.SaveUser(
+          UserRegisterMock.SaveUser(
             assertion = Assertion.equalTo(userIdentified),
             result = Expectation.value(())
           )
@@ -174,7 +174,7 @@ object ArchiveDownloaderTest extends ZIOSpecDefault with Mocks:
           yield check
         testResult.provide(
           mock,
-          UserRepoMock.empty,
+          UserRegisterMock.empty,
           TaskRepoMock.empty,
           GameDownloadingProducerMock.empty,
           MockRandom.empty,
@@ -201,7 +201,7 @@ object ArchiveDownloaderTest extends ZIOSpecDefault with Mocks:
         val userIdentified = user.identified(userId)
 
         val `saving user into database` =
-          UserRepoMock.SaveUser(
+          UserRegisterMock.SaveUser(
             assertion = Assertion.equalTo(userIdentified),
             result = Expectation.value(())
           )
@@ -252,7 +252,7 @@ object ArchiveDownloaderTest extends ZIOSpecDefault with Mocks:
         val userIdentified = user.identified(userId)
 
         val `saving user into database` =
-          UserRepoMock.SaveUser(
+          UserRegisterMock.SaveUser(
             assertion = Assertion.equalTo(userIdentified),
             result = Expectation.value(())
           )

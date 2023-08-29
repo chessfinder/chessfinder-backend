@@ -2,13 +2,13 @@ package chessfinder
 package search
 
 import BrokenComputation.*
-import core.{ProbabilisticBoard, SearchFen}
+import core.{ ProbabilisticBoard, SearchFen }
 import search.*
 
 import chess.format.pgn.PgnStr
 import sttp.model.Uri.UriContext
 import zio.ZIO
-import zio.mock.{Expectation, MockClock}
+import zio.mock.{ Expectation, MockClock }
 import zio.test.*
 
 import java.time.Instant
@@ -51,7 +51,7 @@ object BoardFinderTest extends ZIOSpecDefault with Mocks:
         val historicalGame2 = HistoricalGame(uri"https://example.com2", PgnStr("2"))
         val historicalGame3 = HistoricalGame(uri"https://example.com3", PgnStr("3"))
 
-        val `getting user's games from database` = GameRepoMock.ListGames(
+        val `getting user's games from database` = GameFetcherMock.ListGames(
           assertion = Assertion.equalTo(userId),
           result = Expectation.value(Seq(historicalGame1, historicalGame2, historicalGame3))
         )
